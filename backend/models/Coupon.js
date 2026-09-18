@@ -67,6 +67,10 @@ const couponSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  isPublic: {
+    type: Boolean,
+    default: true
+  },
   validFrom: {
     type: Date,
     default: Date.now

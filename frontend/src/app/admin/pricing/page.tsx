@@ -31,6 +31,7 @@ import {
   Sparkles,
   AlertCircle,
   Copy,
+  Lock,
 } from "lucide-react"
 import toast from "react-hot-toast"
 
@@ -334,7 +335,8 @@ export default function PricingManagementPage() {
     usageLimit: null as number | null,
     userLimit: 1,
     validFrom: new Date().toISOString().split('T')[0],
-    validUntil: ""
+    validUntil: "",
+    isPublic: true
   })
 
   const { data: settingsData, refetch: refetchSettings } = useQuery(
@@ -389,7 +391,8 @@ export default function PricingManagementPage() {
           usageLimit: null,
           userLimit: 1,
           validFrom: new Date().toISOString().split('T')[0],
-          validUntil: ""
+          validUntil: "",
+          isPublic: true
         })
         refetchCoupons()
       },
@@ -417,7 +420,8 @@ export default function PricingManagementPage() {
           usageLimit: null,
           userLimit: 1,
           validFrom: new Date().toISOString().split('T')[0],
-          validUntil: ""
+          validUntil: "",
+          isPublic: true
         })
         refetchCoupons()
       },
@@ -543,7 +547,8 @@ export default function PricingManagementPage() {
       usageLimit: coupon.usageLimit,
       userLimit: coupon.userLimit,
       validFrom: new Date(coupon.validFrom).toISOString().split('T')[0],
-      validUntil: coupon.validUntil ? new Date(coupon.validUntil).toISOString().split('T')[0] : ""
+      validUntil: coupon.validUntil ? new Date(coupon.validUntil).toISOString().split('T')[0] : "",
+      isPublic: coupon.isPublic !== false
     })
     setShowCouponForm(true)
   }
@@ -568,7 +573,8 @@ export default function PricingManagementPage() {
       usageLimit: null,
       userLimit: 1,
       validFrom: new Date().toISOString().split('T')[0],
-      validUntil: ""
+      validUntil: "",
+      isPublic: true
     })
   }
 
@@ -588,7 +594,8 @@ export default function PricingManagementPage() {
         usageLimit: null,
         userLimit: 1,
         validFrom: today,
-        validUntil: nextYear
+        validUntil: nextYear,
+        isPublic: true
       })
     } else if (type === 'welcome10') {
       setCouponFormData({
@@ -602,7 +609,8 @@ export default function PricingManagementPage() {
         usageLimit: null,
         userLimit: 1,
         validFrom: today,
-        validUntil: nextYear
+        validUntil: nextYear,
+        isPublic: true
       })
     } else if (type === 'pro20') {
       setCouponFormData({
@@ -616,7 +624,8 @@ export default function PricingManagementPage() {
         usageLimit: null,
         userLimit: 1,
         validFrom: today,
-        validUntil: nextYear
+        validUntil: nextYear,
+        isPublic: true
       })
     } else if (type === 'mega50') {
       setCouponFormData({
@@ -630,7 +639,8 @@ export default function PricingManagementPage() {
         usageLimit: 100,
         userLimit: 1,
         validFrom: today,
-        validUntil: nextYear
+        validUntil: nextYear,
+        isPublic: true
       })
     }
   }
@@ -1383,6 +1393,52 @@ export default function PricingManagementPage() {
                       </div>
                     </div>
 
+                    {/* Coupon Visibility: Public vs Secret/Hidden */}
+                    <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            Coupon Visibility
+                          </label>
+                          {couponFormData.isPublic ? (
+                            <Badge className="bg-emerald-600 text-white text-[10px]">
+                              👁️ Public (Checkout par sabko dikhega)
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-amber-500 text-slate-950 text-[10px] font-bold flex items-center gap-1">
+                              <Lock className="w-2.5 h-2.5" /> 🔒 Secret / Hidden (Sirf code enter karne par chalega)
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {couponFormData.isPublic
+                            ? "Yeh coupon checkout page par 'Available Offers & Coupons' list me sabhi students ko dikhega."
+                            : "Yeh coupon website par kahin nahi dikhega. Sirf wahi student use kar payega jise aap khud code doge."}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={couponFormData.isPublic ? "default" : "outline"}
+                          onClick={() => setCouponFormData({ ...couponFormData, isPublic: true })}
+                          className={`text-xs h-8 ${couponFormData.isPublic ? "bg-emerald-600 hover:bg-emerald-500 text-white" : ""}`}
+                        >
+                          Public (Show)
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={!couponFormData.isPublic ? "default" : "outline"}
+                          onClick={() => setCouponFormData({ ...couponFormData, isPublic: false })}
+                          className={`text-xs h-8 ${!couponFormData.isPublic ? "bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold" : ""}`}
+                        >
+                          Secret (Hide)
+                        </Button>
+                      </div>
+                    </div>
+
                     {/* Live Student Preview */}
                     <div className="bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl p-3 text-xs space-y-1.5">
                       <div className="flex items-center justify-between font-bold text-emerald-900 dark:text-emerald-200">
@@ -1463,6 +1519,15 @@ export default function PricingManagementPage() {
                             <Badge variant={coupon.isActive ? "default" : "secondary"}>
                               {coupon.isActive ? "● Active" : "○ Inactive"}
                             </Badge>
+                            {coupon.isPublic !== false ? (
+                              <Badge className="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 text-[10px] font-bold">
+                                👁️ Public
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-800 text-[10px] font-bold flex items-center gap-1">
+                                <Lock className="w-2.5 h-2.5" /> 🔒 Secret
+                              </Badge>
+                            )}
                             <Badge variant="outline" className="text-[11px] font-semibold bg-slate-50 dark:bg-slate-800">
                               {coupon.applicableOn === "singleExam"
                                 ? "Single Exam Only"
@@ -1503,8 +1568,20 @@ export default function PricingManagementPage() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
-                          <div className="flex items-center gap-1.5 mr-2">
+                        <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800 flex-wrap">
+                          <div className="flex items-center gap-1 mr-1" title="Toggle Public visibility on checkout">
+                            <span className="text-[11px] text-slate-400">Public:</span>
+                            <Switch
+                              checked={coupon.isPublic !== false}
+                              onCheckedChange={(checked) =>
+                                updateCouponMutation.mutate({
+                                  id: coupon._id,
+                                  data: { isPublic: checked },
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="flex items-center gap-1 mr-2" title="Toggle Active/Inactive">
                             <span className="text-[11px] text-slate-400">Active:</span>
                             <Switch
                               checked={coupon.isActive}

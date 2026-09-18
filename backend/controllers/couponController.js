@@ -17,7 +17,8 @@ exports.createCoupon = async (req, res, next) => {
       usageLimit,
       userLimit,
       validFrom,
-      validUntil
+      validUntil,
+      isPublic
     } = req.body;
 
     // Check if coupon code already exists
@@ -42,6 +43,7 @@ exports.createCoupon = async (req, res, next) => {
       userLimit,
       validFrom,
       validUntil,
+      isPublic: isPublic !== undefined ? isPublic : true,
       createdBy: req.user.id
     });
 
@@ -357,13 +359,14 @@ exports.getPublicCoupons = async (req, res, next) => {
     const now = new Date();
     const coupons = await Coupon.find({
       isActive: true,
+      isPublic: { $ne: false },
       $or: [
         { validUntil: { $exists: false } },
         { validUntil: null },
         { validUntil: { $gte: now } }
       ]
     })
-      .select('code description discountType discountValue maxDiscount minPurchaseAmount applicableOn validUntil')
+      .select('code description discountType discountValue maxDiscount minPurchaseAmount applicableOn validUntil isPublic')
       .sort({ createdAt: -1 })
       .limit(10);
 
