@@ -275,23 +275,6 @@ export default function PaymentPage() {
         couponCode: appliedCoupon?.code,
       })
 
-      // If 100% discount / free order, instantly activate subscription without opening Razorpay
-      if (response.data?.isFree) {
-        if (response.data?.token && response.data?.user) {
-          loginWithToken(response.data.token, response.data.user)
-        }
-
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("pendingPaymentUser")
-          localStorage.removeItem("paymentToken")
-        }
-
-        toast.success("🎉 100% Discount Applied! Your Pro subscription has been activated for FREE!", { duration: 6000 })
-        router.push("/dashboard")
-        setLoading(false)
-        return
-      }
-
       const { order, payment } = response.data
 
       // Load Razorpay SDK
@@ -910,22 +893,12 @@ export default function PaymentPage() {
                 <Button
                   onClick={handlePayment}
                   disabled={loading}
-                  className={`w-full h-12 font-bold text-sm rounded-xl shadow-md transition-all gap-2 ${
-                    finalPrice === 0
-                      ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white shadow-emerald-500/20 active:scale-[0.99]"
-                      : "bg-indigo-600 hover:bg-indigo-500 text-white"
-                  }`}
+                  className="w-full h-12 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl shadow-md transition-all gap-2"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {finalPrice === 0 ? "Activating Free Access..." : "Initiating Razorpay..."}
-                    </>
-                  ) : finalPrice === 0 ? (
-                    <>
-                      <Sparkles className="w-4 h-4 text-amber-300" />
-                      Activate 100% Free Pro Access 🎉
-                      <ArrowRight className="w-4 h-4" />
+                      Initiating Razorpay...
                     </>
                   ) : (
                     <>
@@ -938,17 +911,10 @@ export default function PaymentPage() {
 
                 {/* Trust and Payment Modes */}
                 <div className="pt-2 text-center space-y-2">
-                  {finalPrice === 0 ? (
-                    <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      100% Free Order! No card or payment gateway needed.
-                    </p>
-                  ) : (
-                    <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      UPI, Credit/Debit Cards, NetBanking Supported
-                    </p>
-                  )}
+                  <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                    UPI, Credit/Debit Cards, NetBanking Supported
+                  </p>
                   <button
                     type="button"
                     onClick={() => router.back()}

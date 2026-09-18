@@ -85,7 +85,7 @@ export default function AccountPage() {
                       </span>
                     ) : (
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/20 text-white/90">
-                        Free Aspirant
+                        Student Aspirant
                       </span>
                     )}
                   </div>
@@ -150,15 +150,18 @@ export default function AccountPage() {
               <div className="grid grid-cols-2 gap-3 pt-1 max-w-xs mx-auto">
                 <Link href="/login" className="w-full">
                   <Button
-                    variant="outline"
-                    className="w-full rounded-xl border-white/30 text-white hover:bg-white/10 font-bold text-xs py-5"
+                    type="button"
+                    className="w-full rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs py-5 shadow-md"
                   >
                     Login
                   </Button>
                 </Link>
                 <Link href="/register" className="w-full">
-                  <Button className="w-full rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 hover:from-amber-500 hover:to-amber-600 font-extrabold text-xs py-5 shadow-md">
-                    Register Free
+                  <Button
+                    type="button"
+                    className="w-full rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 hover:from-amber-500 hover:to-amber-600 font-extrabold text-xs py-5 shadow-md"
+                  >
+                    Registration
                   </Button>
                 </Link>
               </div>

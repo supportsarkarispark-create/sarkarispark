@@ -14,6 +14,7 @@ import {
   Sun,
   Moon,
   User,
+  LogIn,
   LogOut,
   ChevronDown,
   LayoutDashboard,
@@ -188,13 +189,23 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
-                <Link href="/login">
-                  <Button variant="ghost">Login</Button>
+              <div className="flex items-center space-x-2">
+                <Link href="/login" className="md:hidden">
+                  <Button
+                    size="sm"
+                    className="h-8 px-3.5 text-xs font-extrabold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
+                  >
+                    Login
+                  </Button>
                 </Link>
-                <Link href="/register">
-                  <Button>Register</Button>
-                </Link>
+                <div className="hidden md:flex items-center space-x-2">
+                  <Link href="/login">
+                    <Button variant="ghost">Login</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button>Registration</Button>
+                  </Link>
+                </div>
               </div>
             )}
 
@@ -298,7 +309,7 @@ export default function Navbar() {
                     </Link>
                     <Link href="/register" onClick={() => setIsMenuOpen(false)}>
                       <Button size="sm" className="w-full text-xs font-bold rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs">
-                        Register
+                        Registration
                       </Button>
                     </Link>
                   </div>
@@ -377,68 +388,88 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Modern Fixed Mobile Bottom Navigation Bar (Hidden on Admin pages) */}
+      {/* Cylindrical Floating Mobile Bottom Navigation Bar (Hidden on Admin pages) */}
       {!pathname?.startsWith("/admin") && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.06)] py-1.5 px-2">
-          <div className="grid grid-cols-5 items-center max-w-md mx-auto">
-            {/* 1. Home */}
-            <Link
-              href="/"
-              className={`flex flex-col items-center justify-center py-1 transition-colors ${pathname === "/" ? "text-indigo-600 dark:text-indigo-400 font-bold" : "text-muted-foreground hover:text-foreground"
+        <div className="md:hidden fixed bottom-3 inset-x-3 sm:inset-x-6 z-40 max-w-md mx-auto pointer-events-none">
+          <div className="pointer-events-auto bg-background/90 dark:bg-slate-900/90 backdrop-blur-xl border border-border/80 dark:border-white/10 shadow-[0_10px_35px_rgba(0,0,0,0.18)] dark:shadow-[0_10px_35px_rgba(0,0,0,0.5)] rounded-full px-2.5 py-1.5 ring-1 ring-black/5 dark:ring-white/5">
+            <div className="grid grid-cols-5 items-center">
+              {/* 1. Home */}
+              <Link
+                href="/"
+                className={`flex flex-col items-center justify-center py-1 px-1 rounded-full transition-all ${
+                  pathname === "/"
+                    ? "text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/50"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
-            >
-              <Home className="h-5 w-5 mb-0.5" />
-              <span className="text-[10px] leading-tight">Home</span>
-            </Link>
+              >
+                <Home className="h-4.5 w-4.5 mb-0.5" />
+                <span className="text-[10px] leading-tight font-medium">Home</span>
+              </Link>
 
-            {/* 2. Exams */}
-            <Link
-              href="/exams"
-              className={`flex flex-col items-center justify-center py-1 transition-colors ${pathname?.startsWith("/exams") ? "text-indigo-600 dark:text-indigo-400 font-bold" : "text-muted-foreground hover:text-foreground"
+              {/* 2. Exams */}
+              <Link
+                href="/exams"
+                className={`flex flex-col items-center justify-center py-1 px-1 rounded-full transition-all ${
+                  pathname?.startsWith("/exams")
+                    ? "text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/50"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
-            >
-              <BookOpen className="h-5 w-5 mb-0.5" />
-              <span className="text-[10px] leading-tight">Exams</span>
-            </Link>
+              >
+                <BookOpen className="h-4.5 w-4.5 mb-0.5" />
+                <span className="text-[10px] leading-tight font-medium">Exams</span>
+              </Link>
 
-            {/* 3. Pro Pass (Center Highlight) */}
-            <Link
-              href="/payment"
-              className="flex flex-col items-center justify-center py-0.5 -mt-2 group"
-            >
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-                <Crown className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 mt-0.5">Pro Pass</span>
-            </Link>
+              {/* 3. Pro Pass (Center Cylindrical Highlight) */}
+              <Link
+                href="/payment"
+                className="flex flex-col items-center justify-center py-0.5 -mt-3.5 group"
+              >
+                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/35 border-2 border-background group-hover:scale-105 transition-transform">
+                  <Crown className="h-5 w-5 fill-slate-950" />
+                </div>
+                <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 mt-0.5 uppercase tracking-wide">
+                  Pro
+                </span>
+              </Link>
 
-            {/* 4. Jobs */}
-            <Link
-              href="/latest-jobs"
-              className={`flex flex-col items-center justify-center py-1 transition-colors ${pathname?.startsWith("/latest-jobs") ? "text-indigo-600 dark:text-indigo-400 font-bold" : "text-muted-foreground hover:text-foreground"
+              {/* 4. Jobs */}
+              <Link
+                href="/latest-jobs"
+                className={`flex flex-col items-center justify-center py-1 px-1 rounded-full transition-all ${
+                  pathname?.startsWith("/latest-jobs")
+                    ? "text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/50"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
-            >
-              <Briefcase className="h-5 w-5 mb-0.5" />
-              <span className="text-[10px] leading-tight">Jobs</span>
-            </Link>
+              >
+                <Briefcase className="h-4.5 w-4.5 mb-0.5" />
+                <span className="text-[10px] leading-tight font-medium">Jobs</span>
+              </Link>
 
-            {/* 5. Account Hub */}
-            <Link
-              href="/account"
-              className={`flex flex-col items-center justify-center py-1 transition-colors ${pathname === "/account" ? "text-indigo-600 dark:text-indigo-400 font-bold" : "text-muted-foreground hover:text-foreground"
+              {/* 5. Account / Login */}
+              <Link
+                href="/account"
+                className={`flex flex-col items-center justify-center py-1 px-1 rounded-full transition-all ${
+                  pathname === "/account"
+                    ? "text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/50"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
-            >
-              {user?.avatar ? (
-                <img
-                  src={getImageUrl(user.avatar)}
-                  alt="User"
-                  className="h-5 w-5 rounded-full object-cover border mb-0.5"
-                />
-              ) : (
-                <User className="h-5 w-5 mb-0.5" />
-              )}
-              <span className="text-[10px] leading-tight">Account</span>
-            </Link>
+              >
+                {user?.avatar ? (
+                  <img
+                    src={getImageUrl(user.avatar)}
+                    alt="User"
+                    className="h-4.5 w-4.5 rounded-full object-cover border mb-0.5"
+                  />
+                ) : user ? (
+                  <User className="h-4.5 w-4.5 mb-0.5" />
+                ) : (
+                  <LogIn className="h-4.5 w-4.5 mb-0.5" />
+                )}
+                <span className="text-[10px] leading-tight font-medium">
+                  {user ? "Account" : "Login"}
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
       )}
