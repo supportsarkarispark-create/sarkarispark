@@ -1,0 +1,77 @@
+const { Settings, User, Exam, Question, Result } = require('../models');
+
+// @desc    Get settings
+// @route   GET /api/settings
+// @access  Public
+exports.getSettings = async (req, res, next) => {
+  try {
+    let settings = await Settings.findOne();
+    
+    if (!settings) {
+      settings = await Settings.create({});
+    }
+
+    // Real-time live counts directly from MongoDB collections
+    const [userCount, examCount, questionCount, resultCount] = await Promise.all([
+      User.countDocuments(),
+      Exam.countDocuments({ isActive: true }),
+      Question.countDocuments(),
+      Result.countDocuments()
+    ]);
+
+    const settingsObj = settings.toObject();
+
+    // Attach real live numbers from the database
+    settingsObj.heroStats = {
+      activeStudents: userCount,
+      mockTests: examCount,
+      questions: questionCount,
+      selections: resultCount
+    };
+
+    res.status(200).json({
+      success: true,
+      settings: settingsObj
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update settings
+// @route   PUT /api/settings
+// @access  Private/Admin
+exports.updateSettings = async (req, res, next) => {
+  try {
+    const { heroStats, examCategories, heroBadge, heroTitle, heroDescription, aboutSection, contactInfo, subscriptionPricing } = req.body;
+    
+    let settings = await Settings.findOne();
+    
+    if (!settings) {
+      settings = await Settings.create({});
+    }
+    
+    // Update fields if provided
+    if (heroStats) settings.heroStats = heroStats;
+    if (examCategories) settings.examCategories = examCategories;
+    if (heroBadge) settings.heroBadge = heroBadge;
+    if (heroTitle) settings.heroTitle = heroTitle;
+    if (heroDescription) settings.heroDescription = heroDescription;
+    if (aboutSection) settings.aboutSection = { ...settings.aboutSection, ...aboutSection };
+    if (contactInfo) settings.contactInfo = contactInfo;
+    if (subscriptionPricing) settings.subscriptionPricing = subscriptionPricing;
+    
+    settings.updatedAt = Date.now();
+    settings.updatedBy = req.user.id;
+    
+    await settings.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Settings updated successfully',
+      settings
+    });
+  } catch (error) {
+    next(error);
+  }
+};
