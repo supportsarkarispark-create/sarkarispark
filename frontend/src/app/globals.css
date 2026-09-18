@@ -53,6 +53,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -93,9 +94,12 @@
 
 /* Modern Animations */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -105,15 +109,19 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -124,6 +132,7 @@
     transform: scale(0.95);
     opacity: 0;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -135,6 +144,7 @@
     transform: translateY(20px);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -145,6 +155,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -155,6 +166,7 @@
     transform: scale(1);
     opacity: 1;
   }
+
   100% {
     transform: scale(1.1);
     opacity: 0;
@@ -162,9 +174,12 @@
 }
 
 @keyframes bounce-subtle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-5px);
   }
@@ -176,7 +191,7 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -371,64 +386,76 @@ html {
 
 /* Mobile Responsive Improvements */
 @media (max-width: 768px) {
+
   /* Touch-friendly tap targets */
-  button, a, input, select, textarea {
+  button,
+  a,
+  input,
+  select,
+  textarea {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Better spacing on mobile */
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   /* Mobile font sizes */
   h1 {
     font-size: 1.75rem;
     line-height: 2.25rem;
   }
-  
+
   h2 {
     font-size: 1.5rem;
     line-height: 2rem;
   }
-  
+
   h3 {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-  
-  p, span, div {
+
+  p,
+  span,
+  div {
     font-size: 0.95rem;
   }
-  
+
   /* Mobile card adjustments */
   .card {
     border-radius: 0.75rem;
   }
-  
+
   /* Mobile grid adjustments */
-  .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
     grid-template-columns: 1fr;
   }
-  
+
   /* Mobile table scroll */
   table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
-  
+
   /* Mobile button sizing */
   .btn {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   /* Mobile form inputs */
-  input, select, textarea {
-    font-size: 16px; /* Prevent iOS zoom */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+    /* Prevent iOS zoom */
   }
 }
 
@@ -448,7 +475,7 @@ html {
   .safe-area-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
-  
+
   .safe-area-top {
     padding-top: max(1rem, env(safe-area-inset-top));
   }

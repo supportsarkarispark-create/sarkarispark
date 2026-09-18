@@ -367,7 +367,7 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between pb-20 md:pb-0">
       <div>
         <Navbar />
 
@@ -527,7 +527,7 @@ export default function PaymentPage() {
                   }
 
                   return (
-                    <div className="grid sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
                       {availableDurations.map((dur) => {
                         const isSelected = selectedDuration === dur.id
                         const durPricing = plans?.[selectedPlanType]?.[dur.id]
@@ -547,7 +547,7 @@ export default function PaymentPage() {
                             key={dur.id}
                             type="button"
                             onClick={() => setSelectedDuration(dur.id as any)}
-                            className={`relative text-center p-3.5 rounded-xl border-2 transition-all ${
+                            className={`relative text-center p-2.5 sm:p-3.5 rounded-xl border-2 transition-all ${
                               isSelected
                                 ? "border-indigo-600 bg-indigo-600 text-white shadow-md ring-2 ring-indigo-300 dark:ring-indigo-900"
                                 : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
@@ -555,7 +555,7 @@ export default function PaymentPage() {
                           >
                             {badgeText && (
                               <span
-                                className={`absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm ${
+                                className={`absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm ${
                                   isSelected
                                     ? "bg-amber-400 text-slate-950 font-extrabold"
                                     : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
@@ -564,15 +564,15 @@ export default function PaymentPage() {
                                 {badgeText}
                               </span>
                             )}
-                            <div className="font-semibold text-xs mb-1.5 opacity-90">{dur.label}</div>
+                            <div className="font-semibold text-[11px] sm:text-xs mb-1 opacity-90">{dur.label}</div>
                             
-                            <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                              <span className="text-xl font-black tracking-tight">
+                            <div className="flex items-center justify-center gap-1 sm:gap-1.5 flex-wrap">
+                              <span className="text-base sm:text-xl font-black tracking-tight">
                                 ₹{offerP}
                               </span>
                               {hasDiscount && (
                                 <span
-                                  className={`text-xs line-through font-normal ${
+                                  className={`text-[10px] sm:text-xs line-through font-normal ${
                                     isSelected ? "text-indigo-200" : "text-slate-400"
                                   }`}
                                 >
