@@ -208,6 +208,97 @@ exports.createOrder = async (req, res, next) => {
       }
     }
 
+    // If amount is 0 (100% discount coupon applied or free order), activate subscription immediately without payment gateway
+    if (amount <= 0) {
+      console.log('[DEBUG] Free / 100% discount coupon order detected for user:', userId);
+      const freeOrderId = `order_free_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+      const freePaymentId = `pay_free_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+
+      // Calculate access end date based on duration
+      let accessEndDate = new Date();
+      if (durationMonths > 0) {
+        accessEndDate.setMonth(accessEndDate.getMonth() + durationMonths);
+      } else {
+        accessEndDate.setFullYear(accessEndDate.getFullYear() + 10);
+      }
+
+      // Create completed payment record
+      const payment = await Payment.create({
+        userId,
+        orderId: freeOrderId,
+        paymentId: freePaymentId,
+        amount: 0,
+        currency: 'INR',
+        planType,
+        planDetails,
+        description: `${description} (100% Free - Coupon ${appliedCoupon || 'Discount'})`,
+        examId: planType === 'singleExam' ? selectedExams[0] : null,
+        finalAmount: 0,
+        status: 'completed',
+        completedAt: new Date(),
+        paymentMethod: 'coupon',
+        examAccess: {
+          examIds: planType === 'allExams' ? [] : (selectedExams || []),
+          accessType: planType,
+          durationMonths: durationMonths,
+          accessStartDate: new Date(),
+          accessEndDate: accessEndDate
+        },
+        couponCode: appliedCoupon,
+        discountAmount: discountAmount || 0
+      });
+
+      // Update user subscription to active paid status
+      const sessionId = crypto.randomUUID();
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          subscriptionType: planType || 'allExams',
+          subscriptionExpiry: accessEndDate,
+          currentSessionId: sessionId,
+          lastLogin: Date.now()
+        },
+        { new: true }
+      );
+
+      // Generate active session JWT token
+      const token = generateToken(updatedUser._id, sessionId);
+
+      // Update coupon usage if coupon was applied
+      if (appliedCoupon) {
+        await Coupon.findOneAndUpdate(
+          { code: appliedCoupon },
+          {
+            $inc: { usedCount: 1 },
+            $push: { usedBy: userId }
+          }
+        );
+      }
+
+      return res.status(200).json({
+        success: true,
+        isFree: true,
+        message: '100% Discount applied! Your Pro subscription has been activated for FREE!',
+        token,
+        user: {
+          id: updatedUser._id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          role: updatedUser.role,
+          subscriptionType: updatedUser.subscriptionType,
+          subscriptionExpiry: updatedUser.subscriptionExpiry
+        },
+        payment: {
+          id: payment._id,
+          orderId: payment.orderId,
+          amount: 0,
+          status: 'completed',
+          planType: payment.planType
+        }
+      });
+    }
+
     // Create Razorpay order
     const options = {
       amount,
