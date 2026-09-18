@@ -422,11 +422,11 @@ export default function Navbar() {
               <span className="text-[10px] leading-tight">Jobs</span>
             </Link>
 
-            {/* 5. Menu Drawer */}
-            <button
-              type="button"
-              onClick={() => setIsMenuOpen(true)}
-              className="flex flex-col items-center justify-center py-1 text-muted-foreground hover:text-foreground transition-colors"
+            {/* 5. Account Hub */}
+            <Link
+              href="/account"
+              className={`flex flex-col items-center justify-center py-1 transition-colors ${pathname === "/account" ? "text-indigo-600 dark:text-indigo-400 font-bold" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               {user?.avatar ? (
                 <img
@@ -435,10 +435,10 @@ export default function Navbar() {
                   className="h-5 w-5 rounded-full object-cover border mb-0.5"
                 />
               ) : (
-                <Menu className="h-5 w-5 mb-0.5" />
+                <User className="h-5 w-5 mb-0.5" />
               )}
-              <span className="text-[10px] leading-tight">{user ? "Account" : "Menu"}</span>
-            </button>
+              <span className="text-[10px] leading-tight">Account</span>
+            </Link>
           </div>
         </div>
       )}

@@ -172,10 +172,32 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-muted/30">
+      <div className="min-h-screen bg-muted/30 flex flex-col justify-between pb-20 md:pb-0">
         <Navbar />
-        <div className="flex items-center justify-center h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="container mx-auto px-4 py-16 max-w-md text-center">
+          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-sm">
+              <User className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              Login to View Profile
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+              Apna profile dekhne aur edit karne ke liye kripya apne account me login karein.
+            </p>
+            <div className="pt-2 flex flex-col gap-2">
+              <Link href="/login">
+                <Button className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm py-5">
+                  Login to Account
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="outline" className="w-full rounded-xl font-bold text-sm py-5">
+                  Create New Account
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
         <Footer />
       </div>
