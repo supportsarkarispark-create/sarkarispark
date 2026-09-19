@@ -360,10 +360,10 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
               
               {/* Trust Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm text-xs sm:text-sm font-semibold text-indigo-900 dark:text-indigo-300 mx-auto lg:mx-0">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                <span className="text-base">🇮🇳</span>
-                <span>India&apos;s #1 Govt Exam Mock Test Portal</span>
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm text-[11px] sm:text-xs md:text-sm font-semibold text-indigo-900 dark:text-indigo-300 mx-auto lg:mx-0 whitespace-nowrap">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                <span className="text-sm sm:text-base shrink-0">🇮🇳</span>
+                <span className="whitespace-nowrap">India&apos;s #1 Govt Exam Mock Test Portal</span>
                 <span className="hidden sm:inline-block text-slate-400 dark:text-slate-600">|</span>
                 <span className="hidden sm:inline-flex items-center text-amber-500 font-bold">
                   ★ 4.9/5 Rating
@@ -372,9 +372,9 @@ export default function HomePage() {
 
               {/* Main Headline */}
               <div className="space-y-2 sm:space-y-3">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight sm:leading-[1.15]">
                   Abki Baar,{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">
+                  <span className="block my-1 text-3xl sm:inline sm:my-0 sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 drop-shadow-sm">
                     Sarkari Naukri
                   </span>{" "}
                   Hamaar! 🚀
