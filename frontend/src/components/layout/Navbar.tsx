@@ -77,14 +77,27 @@ export default function Navbar() {
       <nav className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
-              <GraduationCap className="h-6 w-6 text-white" />
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group transition-transform active:scale-95">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-500 shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/40 group-hover:scale-105 transition-all duration-300">
+              <GraduationCap className="h-5.5 w-5.5 text-white" />
+              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-400 text-slate-950 font-black shadow-xs">
+                <Sparkles className="h-2 w-2 text-slate-950 fill-slate-950" />
+              </span>
             </div>
-            <span className="text-xl font-bold">
-              <span className="text-primary">Sarkari</span> Spark
-            </span>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1 leading-none">
+                <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                  Sarkari
+                </span>
+                <span className="text-lg sm:text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600">
+                  Spark
+                </span>
+              </div>
+              <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-0.5 hidden xs:block">
+                Govt Exam Portal
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -241,15 +254,20 @@ export default function Navbar() {
               <div className="flex items-center justify-between pb-4 border-b border-border">
                 <Link
                   href="/"
-                  className="flex items-center space-x-2"
+                  className="flex items-center gap-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-md">
+                  <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-500 shadow-sm">
                     <GraduationCap className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-lg font-extrabold tracking-tight">
-                    <span className="text-primary">Sarkari</span> Spark
-                  </span>
+                  <div className="flex items-center gap-1 leading-none">
+                    <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">
+                      Sarkari
+                    </span>
+                    <span className="text-base font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">
+                      Spark
+                    </span>
+                  </div>
                 </Link>
                 <Button
                   variant="ghost"

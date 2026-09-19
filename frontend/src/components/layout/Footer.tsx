@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useQuery } from "react-query"
 import { settingsAPI, examCategoryAPI } from "@/lib/api"
-import { GraduationCap, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, Linkedin, Send, MessageCircle } from "lucide-react"
+import { GraduationCap, Sparkles, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, Linkedin, Send, MessageCircle } from "lucide-react"
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -73,13 +73,26 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
-                <GraduationCap className="h-6 w-6 text-white" />
+            <Link href="/" className="flex items-center gap-2.5 mb-4 group">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-500 shadow-md">
+                <GraduationCap className="h-5 w-5 text-white" />
+                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-400 text-slate-950 font-black">
+                  <Sparkles className="h-2 w-2 text-slate-950 fill-slate-950" />
+                </span>
               </div>
-              <span className="text-xl font-bold">
-                <span className="text-primary">Sarkari</span> Spark
-              </span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1 leading-none">
+                  <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                    Sarkari
+                  </span>
+                  <span className="text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600">
+                    Spark
+                  </span>
+                </div>
+                <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-0.5">
+                  Govt Exam Portal
+                </span>
+              </div>
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
               Your trusted companion for government exam preparation. We help thousands of aspirants achieve their dreams.
