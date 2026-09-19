@@ -411,7 +411,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
             {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-4 sm:space-y-6 lg:space-y-8 text-left">
+            <div className="lg:col-span-6 xl:col-span-5 space-y-4 sm:space-y-6 lg:space-y-7 text-left">
 
               {/* Trust Badge - Compact & High-Positioned on Mobile */}
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-xs text-[10px] sm:text-xs font-semibold text-indigo-900 dark:text-indigo-300">
@@ -526,7 +526,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Column: Image Banner Slider (Connected to Admin Panel) */}
-            <div className="lg:col-span-5 relative">
+            <div className="lg:col-span-6 xl:col-span-7 relative">
               <HeroSlider sliders={sliders} />
             </div>
 
@@ -1230,7 +1230,7 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       {/* Main Banner Card */}
       <div className="relative bg-slate-900 border border-indigo-200/40 dark:border-slate-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10">
         <div
-          className="relative h-[250px] sm:h-[360px] md:h-[420px] lg:h-[480px] xl:h-[510px] cursor-pointer"
+          className="relative h-[240px] sm:h-[300px] md:h-[340px] lg:h-[320px] xl:h-[380px] 2xl:h-[410px] cursor-pointer"
           onClick={handleSlideClick}
         >
           {/* Media: Video or Image */}
