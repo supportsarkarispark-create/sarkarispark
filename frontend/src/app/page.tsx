@@ -1117,6 +1117,8 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   // Curated fallback slides if database has no active slides
   const defaultFallbackSliders = [
@@ -1181,6 +1183,25 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
     goToSlide((currentIndex - 1 + displaySliders.length) % displaySliders.length)
   }
 
+  // Touch Swipe Handlers for Mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    if (distance > 45) {
+      nextSlide()
+    } else if (distance < -45) {
+      prevSlide()
+    }
+    setTouchStart(null)
+    setTouchEnd(null)
+  }
+
   const handleSlideClick = () => {
     const slide = displaySliders[currentIndex]
     if (slide?.redirectUrl) {
@@ -1199,14 +1220,17 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       className="relative w-full group select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Ambient Glow Backdrop */}
-      <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-600/30 via-purple-600/25 to-pink-600/30 rounded-[32px] blur-xl -z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-600/30 via-purple-600/25 to-pink-600/30 rounded-[28px] sm:rounded-[32px] blur-xl -z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
 
       {/* Main Banner Card */}
-      <div className="relative bg-slate-900 border border-indigo-200/40 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10">
+      <div className="relative bg-slate-900 border border-indigo-200/40 dark:border-slate-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10">
         <div
-          className="relative h-[220px] sm:h-[340px] md:h-[420px] lg:h-[480px] xl:h-[510px] cursor-pointer"
+          className="relative h-[250px] sm:h-[360px] md:h-[420px] lg:h-[480px] xl:h-[510px] cursor-pointer"
           onClick={handleSlideClick}
         >
           {/* Media: Video or Image */}
@@ -1232,24 +1256,24 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
           )}
 
           {/* Multi-Stop Gradient Scrim for crisp text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/45 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-transparent pointer-events-none" />
 
           {/* Top Overlays: Badge & Slide Counter */}
-          <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between pointer-events-none">
-            <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-950/75 border border-white/20 backdrop-blur-md text-[10px] sm:text-xs font-bold text-amber-300 shadow-md">
-              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400" />
+          <div className="absolute top-2.5 left-2.5 right-2.5 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between pointer-events-none">
+            <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-950/80 border border-white/20 backdrop-blur-md text-[10px] sm:text-xs font-bold text-amber-300 shadow-md">
+              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400 shrink-0" />
               {currentSlide?.badge || "🔥 Featured Test Series"}
             </span>
-            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-950/75 border border-white/20 backdrop-blur-md text-[10px] sm:text-[11px] font-semibold text-white/90 shadow-md">
+            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-950/80 border border-white/20 backdrop-blur-md text-[10px] sm:text-[11px] font-semibold text-white/90 shadow-md">
               {currentIndex + 1} / {displaySliders.length}
             </span>
           </div>
 
           {/* Bottom Content Area */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 space-y-1 sm:space-y-2">
+          <div className="absolute bottom-0 left-0 right-0 p-3.5 sm:p-7 space-y-1 sm:space-y-2">
             {currentSlide?.title && (
-              <h3 className="text-white text-base sm:text-2xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 sm:line-clamp-none">
+              <h3 className="text-white text-sm sm:text-2xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 sm:line-clamp-none pr-16 sm:pr-0">
                 {currentSlide.title}
               </h3>
             )}
@@ -1261,10 +1285,10 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
 
             {/* Smart Interactive CTA Pill */}
             <div className="pt-1 sm:pt-2 flex items-center gap-2 sm:gap-3">
-              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-xs sm:text-sm shadow-md group-hover:scale-105 transition-transform">
-                <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-slate-950" />
+              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[11px] sm:text-sm shadow-md group-hover:scale-105 transition-transform">
+                <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-slate-950 shrink-0" />
                 Attempt Mock Test
-                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
               </span>
               {currentSlide?.redirectUrl && (
                 <span className="hidden sm:inline-flex text-xs font-medium text-white/70 hover:text-white transition-colors underline decoration-white/30 underline-offset-4">
@@ -1274,7 +1298,7 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
             </div>
           </div>
 
-          {/* Left / Right Nav Controls */}
+          {/* Left / Right Nav Controls - Desktop Only to keep Mobile Clean */}
           {displaySliders.length > 1 && (
             <>
               <button
@@ -1283,7 +1307,7 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                   e.stopPropagation()
                   prevSlide()
                 }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-slate-950 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md items-center justify-center text-white hover:bg-slate-950 hover:scale-110 active:scale-95 transition-all shadow-lg"
                 aria-label="Previous Slide"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -1294,35 +1318,39 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                   e.stopPropagation()
                   nextSlide()
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-slate-950 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md items-center justify-center text-white hover:bg-slate-950 hover:scale-110 active:scale-95 transition-all shadow-lg"
                 aria-label="Next Slide"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
             </>
           )}
-        </div>
 
-        {/* Bottom Indicator Dots / Bar */}
-        {displaySliders.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
-            {displaySliders.map((_, index) => (
-              <button
-                type="button"
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  goToSlide(index)
-                }}
-                aria-label={`Go to slide ${index + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex
-                  ? "bg-amber-400 w-7 shadow-sm"
-                  : "bg-white/40 hover:bg-white/75 w-2"
-                  }`}
-              />
-            ))}
-          </div>
-        )}
+          {/* Sleek Frosted Micro-Dot Indicator Pill (Compact & Elegant) */}
+          {displaySliders.length > 1 && (
+            <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/20 backdrop-blur-md z-10 pointer-events-auto shadow-md">
+              {displaySliders.map((_, index) => (
+                <button
+                  type="button"
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goToSlide(index)
+                  }}
+                  aria-label={`Go to slide ${index + 1}`}
+                  className="appearance-none bg-transparent border-0 p-0.5 m-0 outline-none focus:outline-none flex items-center justify-center cursor-pointer"
+                >
+                  <span
+                    className={`block rounded-full transition-all duration-300 ${index === currentIndex
+                      ? "w-4 h-1.5 bg-amber-400 shadow-xs"
+                      : "w-1.5 h-1.5 bg-white/40 hover:bg-white/70"
+                      }`}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
