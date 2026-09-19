@@ -326,22 +326,77 @@ export default function HomePage() {
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 font-sans selection:bg-indigo-500 selection:text-white pb-20 md:pb-0">
       <Navbar />
 
-      {/* 1. Live Breaking News / Notification Ticker */}
-      <div className="bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 text-white py-2 px-4 border-b border-indigo-500/30">
-        <div className="container mx-auto flex items-center justify-between text-xs sm:text-sm font-medium">
-          <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-bold text-[11px] uppercase tracking-wider animate-pulse shadow-sm">
-              <Flame className="h-3.5 w-3.5 fill-slate-950" /> Live Update
-            </span>
-            <span className="text-indigo-100 truncate">
-              🔥 UP Police Constable 2026 Free Mock Tests Active • SSC CGL 2026 Official Calendar Out • Railway RPF Admit Cards Available Now
-            </span>
+      {/* 1. Live Breaking News / Notification Ticker (Chalti Hui Line / Marquee) */}
+      <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white py-2 border-b border-indigo-500/20 overflow-hidden relative flex items-center shadow-xs">
+        {/* Left Fixed Live Badge */}
+        <div className="z-10 pl-3 pr-2 sm:pl-4 sm:pr-3 bg-gradient-to-r from-indigo-950 via-indigo-950 to-transparent flex items-center shrink-0">
+          <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[10px] sm:text-xs uppercase tracking-wider shadow-md shadow-amber-500/20 shrink-0">
+            <span className="flex h-2 w-2 rounded-full bg-red-600 animate-ping shrink-0" />
+            <Flame className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-slate-950 shrink-0" />
+            <span className="whitespace-nowrap">Live Updates</span>
+          </span>
+        </div>
+
+        {/* Scrolling Marquee Container */}
+        <div className="overflow-hidden whitespace-nowrap flex-1 relative flex items-center py-0.5">
+          <div className="animate-marquee flex items-center text-xs sm:text-sm font-semibold text-slate-200 cursor-pointer">
+            {/* Set 1 */}
+            <div className="flex items-center gap-6 sm:gap-8 shrink-0 pr-6 sm:pr-8">
+              <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold">
+                🔥 UP Police Constable 2026 Free Mock Tests Active
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-indigo-200">
+                ⚡ SSC CGL 2026 Tier-1 Official Calendar Released
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-300 font-bold">
+                📢 Railway RRB NTPC & Group D Admit Cards Available
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-sky-300">
+                🎯 IBPS PO & Clerk 2026 Mock Test Series Live
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-pink-300 font-bold">
+                ⭐ All-India Live Ranking & Bilingual Solutions
+              </span>
+              <span className="text-slate-600">•</span>
+            </div>
+
+            {/* Set 2 (Seamless Infinite Loop) */}
+            <div className="flex items-center gap-6 sm:gap-8 shrink-0 pr-6 sm:pr-8" aria-hidden="true">
+              <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold">
+                🔥 UP Police Constable 2026 Free Mock Tests Active
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-indigo-200">
+                ⚡ SSC CGL 2026 Tier-1 Official Calendar Released
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-emerald-300 font-bold">
+                📢 Railway RRB NTPC & Group D Admit Cards Available
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-sky-300">
+                🎯 IBPS PO & Clerk 2026 Mock Test Series Live
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="inline-flex items-center gap-1.5 text-pink-300 font-bold">
+                ⭐ All-India Live Ranking & Bilingual Solutions
+              </span>
+              <span className="text-slate-600">•</span>
+            </div>
           </div>
+        </div>
+
+        {/* Right Fixed Action Button */}
+        <div className="hidden sm:flex items-center pr-4 pl-3 bg-gradient-to-l from-indigo-950 via-indigo-950 to-transparent z-10 shrink-0">
           <Link
             href="/exams"
-            className="hidden sm:inline-flex items-center gap-1 text-amber-300 hover:text-white font-semibold transition-colors flex-shrink-0 ml-4"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm"
           >
-            Attempt Now <ArrowRight className="h-3.5 w-3.5" />
+            Attempt Test <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
       </div>
