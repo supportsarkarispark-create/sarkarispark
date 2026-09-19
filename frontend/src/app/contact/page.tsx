@@ -16,7 +16,6 @@ import {
   Instagram,
   Youtube,
   GraduationCap,
-  Clock,
   HelpCircle,
   ChevronDown,
   ChevronUp
@@ -218,29 +217,6 @@ export default function ContactPage() {
               </div>
             )}
           </div>
-
-          {/* Response Time Card */}
-          <Card className="mt-6 border-2 border-green-100 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <Clock className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground mb-1">Response Time</h3>
-                    <p className="text-sm text-muted-foreground">
-                      We typically respond to all inquiries within 24 hours
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 px-6 py-3 bg-white rounded-full shadow-md">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-semibold text-green-700">Active Support</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
