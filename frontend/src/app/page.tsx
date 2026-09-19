@@ -434,12 +434,12 @@ export default function HomePage() {
                   <span className="block text-[32px] sm:text-5xl lg:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 drop-shadow-xs leading-[1.1]">
                     Sarkari Naukri
                   </span>
-                  <span className="inline-flex items-center gap-2 text-2xl sm:text-4xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight">
+                  <span className="inline-flex items-center gap-2 text-3xl sm:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-none">
                     <span className="relative">
-                      Hamaar!
-                      <span className="absolute -bottom-1.5 left-0 right-0 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 shadow-sm" />
+                      <span className="text-[40px] sm:text-5xl lg:text-7xl font-black tracking-tight drop-shadow-xs">Hamaar!</span>
+                      <span className="absolute -bottom-1 sm:-bottom-1.5 left-0 right-0 h-2 sm:h-2.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 shadow-sm" />
                     </span>
-                    <span className="inline-block animate-bounce text-2xl sm:text-4xl">🚀</span>
+                    <span className="inline-block animate-bounce text-3xl sm:text-5xl">🚀</span>
                   </span>
                 </h1>
                 <p className="text-sm sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed">
@@ -447,35 +447,35 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Quick Exam Search Bar */}
-              <form onSubmit={handleSearchSubmit} className="max-w-xl">
-                <div className="relative flex items-center p-1.5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-indigo-200/80 dark:border-slate-800 shadow-xl shadow-indigo-100/50 dark:shadow-none focus-within:border-indigo-600 transition-all">
-                  <div className="pl-3 text-slate-400">
-                    <Search className="h-5 w-5" />
+              {/* Quick Exam Search Bar - Sleek, Compact & Modern on Mobile */}
+              <form onSubmit={handleSearchSubmit} className="max-w-md sm:max-w-xl">
+                <div className="relative flex items-center p-1 sm:p-1.5 rounded-full bg-white dark:bg-slate-900 border border-indigo-200/90 sm:border-2 dark:border-slate-800 shadow-md shadow-indigo-100/50 dark:shadow-none focus-within:border-indigo-600 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+                  <div className="pl-3 text-indigo-500/80 shrink-0">
+                    <Search className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search exam e.g. UP Police, SSC CGL, RRB NTPC..."
-                    className="w-full px-3 py-2.5 bg-transparent text-sm sm:text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
+                    placeholder="Search exam (UP Police, SSC, RRB...)"
+                    className="w-full px-2.5 sm:px-3 py-1 sm:py-2 bg-transparent text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
                   />
                   <Button
                     type="submit"
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl px-5 py-2.5 font-semibold text-sm shadow-md"
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full px-3.5 sm:px-5 py-1 sm:py-2 h-7 sm:h-9 font-semibold text-xs sm:text-sm shadow-sm shrink-0"
                   >
                     Search
                   </Button>
                 </div>
                 {/* Trending Quick Chips */}
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 text-xs text-slate-500 dark:text-slate-400 justify-start">
-                  <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 shrink-0">⚡ Trending:</span>
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1.5 sm:pt-2 text-xs text-slate-500 dark:text-slate-400 justify-start">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-400 shrink-0">⚡ Trending:</span>
                   {["UP Police", "SSC CGL", "RRB NTPC", "IBPS PO", "CTET"].map((tag) => (
                     <button
                       key={tag}
                       type="button"
                       onClick={() => setSearchQuery(tag)}
-                      className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200/60 dark:border-slate-700/60 transition-colors shrink-0 text-[11px] font-medium"
+                      className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200/60 dark:border-slate-700/60 transition-colors shrink-0 text-[10px] sm:text-[11px] font-medium"
                     >
                       {tag}
                     </button>
@@ -1326,9 +1326,9 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
             </>
           )}
 
-          {/* Sleek Frosted Micro-Dot Indicator Pill (Compact & Elegant) */}
+          {/* Pure Indicator Points / Dots (No Cylindrical Container) */}
           {displaySliders.length > 1 && (
-            <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/20 backdrop-blur-md z-10 pointer-events-auto shadow-md">
+            <div className="absolute bottom-3.5 right-4 sm:bottom-4 sm:right-6 flex items-center gap-2 z-10 pointer-events-auto">
               {displaySliders.map((_, index) => (
                 <button
                   type="button"
@@ -1338,12 +1338,12 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                     goToSlide(index)
                   }}
                   aria-label={`Go to slide ${index + 1}`}
-                  className="appearance-none bg-transparent border-0 p-0.5 m-0 outline-none focus:outline-none flex items-center justify-center cursor-pointer"
+                  className="p-1 group focus:outline-none cursor-pointer"
                 >
                   <span
                     className={`block rounded-full transition-all duration-300 ${index === currentIndex
-                      ? "w-4 h-1.5 bg-amber-400 shadow-xs"
-                      : "w-1.5 h-1.5 bg-white/40 hover:bg-white/70"
+                      ? "w-2.5 h-2.5 bg-amber-400 shadow-md shadow-amber-400/60 ring-2 ring-amber-400/40"
+                      : "w-2 h-2 bg-white/60 group-hover:bg-white drop-shadow-sm"
                       }`}
                   />
                 </button>
