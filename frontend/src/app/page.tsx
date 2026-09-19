@@ -402,32 +402,33 @@ export default function HomePage() {
       </div>
 
       {/* 2. Hero Section - Premium Visual Experience */}
-      <section className="relative overflow-hidden pt-6 pb-6 lg:pt-10 lg:pb-8">
+      <section className="relative overflow-hidden pt-2 pb-6 sm:pt-5 lg:pt-8 lg:pb-8">
         {/* Ambient Gradient Glow Backgrounds */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-tr from-indigo-500/15 via-purple-500/20 to-cyan-400/15 blur-3xl -z-10 pointer-events-none" />
         <div className="absolute -top-24 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
         <div className="absolute top-1/3 -right-20 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl -z-10 pointer-events-none" />
 
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
             {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6 lg:space-y-8 text-left">
 
-              {/* Trust Badge */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm text-[11px] sm:text-xs md:text-sm font-semibold text-indigo-900 dark:text-indigo-300 whitespace-nowrap">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
-                <span className="text-sm sm:text-base shrink-0">🇮🇳</span>
-                <span className="whitespace-nowrap">India&apos;s #1 Govt Exam Mock Test Portal</span>
+              {/* Trust Badge - Compact & High-Positioned on Mobile */}
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-xs text-[10px] sm:text-xs font-semibold text-indigo-900 dark:text-indigo-300">
+                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                <span className="text-xs shrink-0">🇮🇳</span>
+                <span className="sm:hidden whitespace-nowrap">India&apos;s #1 Govt Exam Portal</span>
+                <span className="hidden sm:inline whitespace-nowrap">India&apos;s #1 Govt Exam Mock Test Portal</span>
                 <span className="hidden sm:inline-block text-slate-400 dark:text-slate-600">|</span>
                 <span className="hidden sm:inline-flex items-center text-amber-500 font-bold">
                   ★ 4.9/5 Rating
                 </span>
               </div>
 
-              {/* Main Headline */}
+              {/* Main Headline - Bold, Big & Premium */}
               <div className="space-y-2 sm:space-y-3">
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.18]">
+                <h1 className="text-[35px] sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
                   <span className="block sm:inline text-slate-900 dark:text-white">
                     Abki Baar,{" "}
                   </span>
