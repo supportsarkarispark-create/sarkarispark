@@ -346,7 +346,7 @@ exports.createOrder = async (req, res, next) => {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
-        key: process.env.RAZORPAY_KEY_ID
+        key: process.env.RAZORPAY_KEY_ID || 'rzp_test_SsjdRz56NfntbK'
       },
       payment: {
         id: payment._id,

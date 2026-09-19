@@ -275,7 +275,32 @@ export default function PaymentPage() {
         couponCode: appliedCoupon?.code,
       })
 
+      // 1. Handle 100% Free / Coupon Discount (Amount is ₹0)
+      if (response.data?.isFree || response.data?.payment?.amount === 0) {
+        if (response.data?.token && response.data?.user) {
+          loginWithToken(response.data.token, response.data.user)
+        }
+
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("pendingPaymentUser")
+          localStorage.removeItem("paymentToken")
+        }
+
+        toast.success(
+          response.data?.message || "100% Discount applied! Your Pro subscription has been activated for FREE! 🎉",
+          { duration: 5000 }
+        )
+        setLoading(false)
+        router.push("/dashboard")
+        return
+      }
+
+      // 2. Normal Paid Order via Razorpay
       const { order, payment } = response.data
+
+      if (!order) {
+        throw new Error(response.data?.message || "Payment order creation failed")
+      }
 
       // Load Razorpay SDK
       if (!window.Razorpay) {
@@ -283,7 +308,13 @@ export default function PaymentPage() {
         script.src = "https://checkout.razorpay.com/v1/checkout.js"
         script.async = true
         script.onload = () => {
-          initiateRazorpay(order, payment, currentUser)
+          try {
+            initiateRazorpay(order, payment, currentUser)
+          } catch (err: any) {
+            console.error("Razorpay initiation error:", err)
+            toast.error("Failed to open Razorpay gateway")
+            setLoading(false)
+          }
         }
         script.onerror = () => {
           toast.error("Failed to load payment gateway")
@@ -295,7 +326,7 @@ export default function PaymentPage() {
       }
     } catch (error: any) {
       console.error("Order creation failed:", error)
-      toast.error(error.response?.data?.message || "Payment initiation failed")
+      toast.error(error.response?.data?.message || error.message || "Payment initiation failed")
       setLoading(false)
     }
   }
@@ -889,16 +920,26 @@ export default function PaymentPage() {
                   </div>
                 </div>
 
-                {/* Pay Button */}
+                {/* Pay / Free Activate Button */}
                 <Button
                   onClick={handlePayment}
                   disabled={loading}
-                  className="w-full h-12 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl shadow-md transition-all gap-2"
+                  className={`w-full h-12 text-white font-bold text-sm rounded-xl shadow-md transition-all gap-2 ${
+                    finalPrice === 0
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-500/25"
+                      : "bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/20"
+                  }`}
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Initiating Razorpay...
+                      {finalPrice === 0 ? "Activating Free Subscription..." : "Initiating Razorpay..."}
+                    </>
+                  ) : finalPrice === 0 ? (
+                    <>
+                      <Sparkles className="w-4 h-4 text-amber-300" />
+                      Claim Free Access (₹0) & Activate
+                      <ArrowRight className="w-4 h-4" />
                     </>
                   ) : (
                     <>
@@ -913,7 +954,7 @@ export default function PaymentPage() {
                 <div className="pt-2 text-center space-y-2">
                   <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                    UPI, Credit/Debit Cards, NetBanking Supported
+                    {finalPrice === 0 ? "100% Free with Coupon • No Bank/Card Required" : "UPI, Credit/Debit Cards, NetBanking Supported"}
                   </p>
                   <button
                     type="button"
