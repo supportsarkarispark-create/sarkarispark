@@ -23,11 +23,8 @@ import {
   MapPin,
   MessageCircle,
   Facebook,
-  Twitter,
   Instagram,
   Youtube,
-  Linkedin,
-  Send,
 } from "lucide-react"
 import toast from "react-hot-toast"
 
@@ -59,11 +56,8 @@ export default function AdminSettingsPage() {
     address: "",
     whatsapp: "",
     facebook: "",
-    twitter: "",
     instagram: "",
     youtube: "",
-    linkedin: "",
-    telegram: "",
   })
 
   // Initialize form when data loads
@@ -345,17 +339,6 @@ export default function AdminSettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium flex items-center gap-2">
-                        <Twitter className="h-4 w-4 text-blue-400" />
-                        Twitter
-                      </label>
-                      <Input
-                        value={contactInfo.twitter}
-                        onChange={(e) => setContactInfo(prev => ({ ...prev, twitter: e.target.value }))}
-                        placeholder="https://twitter.com/sarkarispark"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center gap-2">
                         <Instagram className="h-4 w-4 text-pink-600" />
                         Instagram
                       </label>
@@ -374,28 +357,6 @@ export default function AdminSettingsPage() {
                         value={contactInfo.youtube}
                         onChange={(e) => setContactInfo(prev => ({ ...prev, youtube: e.target.value }))}
                         placeholder="https://youtube.com/sarkarispark"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center gap-2">
-                        <Linkedin className="h-4 w-4 text-blue-700" />
-                        LinkedIn
-                      </label>
-                      <Input
-                        value={contactInfo.linkedin}
-                        onChange={(e) => setContactInfo(prev => ({ ...prev, linkedin: e.target.value }))}
-                        placeholder="https://linkedin.com/company/sarkarispark"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center gap-2">
-                        <Send className="h-4 w-4 text-blue-500" />
-                        Telegram
-                      </label>
-                      <Input
-                        value={contactInfo.telegram}
-                        onChange={(e) => setContactInfo(prev => ({ ...prev, telegram: e.target.value }))}
-                        placeholder="https://t.me/sarkarispark"
                       />
                     </div>
                   </div>

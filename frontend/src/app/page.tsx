@@ -411,7 +411,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
             {/* Left Content Column */}
-            <div className="lg:col-span-6 xl:col-span-5 space-y-4 sm:space-y-6 lg:space-y-7 text-left">
+            <div className="lg:col-span-7 xl:col-span-7 space-y-4 sm:space-y-6 lg:space-y-7 text-left">
 
               {/* Trust Badge - Compact & High-Positioned on Mobile */}
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-xs text-[10px] sm:text-xs font-semibold text-indigo-900 dark:text-indigo-300">
@@ -526,7 +526,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Column: Image Banner Slider (Connected to Admin Panel) */}
-            <div className="lg:col-span-6 xl:col-span-7 relative">
+            <div className="lg:col-span-5 xl:col-span-5 relative w-full flex justify-center lg:justify-end">
               <HeroSlider sliders={sliders} />
             </div>
 
@@ -1202,103 +1202,144 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
     setTouchEnd(null)
   }
 
-  const handleSlideClick = () => {
+  const handleSlideClick = (redirectUrl?: string) => {
     const slide = displaySliders[currentIndex]
-    if (slide?.redirectUrl) {
-      router.push(slide.redirectUrl)
+    const destination = redirectUrl || slide?.redirectUrl
+    if (destination) {
+      router.push(destination)
     } else {
       router.push("/exams")
     }
   }
 
   const currentSlide = displaySliders[currentIndex] || displaySliders[0]
-  const imageUrl = getImageUrl(currentSlide?.image)
-  const videoUrl = currentSlide?.video ? getImageUrl(currentSlide.video) : null
 
   return (
     <div
-      className="relative w-full group select-none"
+      className="relative w-full max-w-xl mx-auto lg:max-w-none group select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Ambient Glow Backdrop */}
-      <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-600/30 via-purple-600/25 to-pink-600/30 rounded-[28px] sm:rounded-[32px] blur-xl -z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Ambient Gradient Glow Backdrop */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/25 rounded-[22px] sm:rounded-[26px] blur-lg -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
 
-      {/* Main Banner Card */}
-      <div className="relative bg-slate-900 border border-indigo-200/40 dark:border-slate-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10">
-        <div
-          className="relative h-[240px] sm:h-[300px] md:h-[340px] lg:h-[320px] xl:h-[380px] 2xl:h-[410px] cursor-pointer"
-          onClick={handleSlideClick}
-        >
-          {/* Media: Video or Image */}
-          {videoUrl ? (
-            <video
-              src={videoUrl}
-              autoPlay
-              muted
-              onEnded={nextSlide}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <img
-              src={imageUrl}
-              alt={currentSlide?.title || "Sarkari Spark Mock Test Banner"}
-              onError={(e) => {
-                // Fallback to high quality image if link fails
-                (e.target as HTMLImageElement).src =
-                  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop"
-              }}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            />
+      {/* Main Card Container with Subtle Gradient Ring */}
+      <div className="relative p-1 sm:p-1.5 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-white/90 via-white/50 to-white/20 dark:from-slate-700/60 dark:via-slate-800/40 dark:to-slate-900/60 shadow-xl shadow-indigo-950/10 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md">
+        
+        {/* Slider Viewport with Controlled Proportional Height */}
+        <div className="relative w-full h-[220px] sm:h-[260px] md:h-[290px] lg:h-[310px] xl:h-[330px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
+          
+          {/* Autoplay Progress Line */}
+          {displaySliders.length > 1 && (
+            <div className="absolute top-0 left-0 right-0 h-[3px] bg-white/10 z-30 overflow-hidden pointer-events-none">
+              <div
+                key={currentIndex}
+                className={`h-full bg-gradient-to-r from-amber-400 via-indigo-400 to-purple-400 ${
+                  isPaused ? "animate-none" : "animate-slider-progress"
+                }`}
+                style={{
+                  animationPlayState: isPaused ? "paused" : "running",
+                }}
+              />
+            </div>
           )}
 
-          {/* Multi-Stop Gradient Scrim for crisp text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-transparent pointer-events-none" />
+          {/* Slides with Smooth Cinematic Cross-Fade */}
+          {displaySliders.map((slide, index) => {
+            const isActive = index === currentIndex
+            const imageUrl = getImageUrl(slide?.image)
+            const videoUrl = slide?.video ? getImageUrl(slide.video) : null
+
+            return (
+              <div
+                key={slide._id || index}
+                className={`absolute inset-0 transition-all duration-700 ease-in-out cursor-pointer ${
+                  isActive
+                    ? "opacity-100 scale-100 pointer-events-auto z-10"
+                    : "opacity-0 scale-105 pointer-events-none z-0"
+                }`}
+                onClick={() => handleSlideClick(slide?.redirectUrl)}
+              >
+                {/* Media: Video or Image with gentle scale */}
+                {videoUrl ? (
+                  <video
+                    src={videoUrl}
+                    autoPlay
+                    muted
+                    onEnded={nextSlide}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={imageUrl}
+                    alt={slide?.title || "Sarkari Spark Mock Test Banner"}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop"
+                    }}
+                    className="w-full h-full object-cover transform transition-transform duration-1000 ease-out group-hover:scale-105"
+                  />
+                )}
+
+                {/* Cinematic Multi-Stop Gradient Scrim for crystal clear readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+              </div>
+            )
+          })}
 
           {/* Top Overlays: Badge & Slide Counter */}
-          <div className="absolute top-2.5 left-2.5 right-2.5 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between pointer-events-none">
-            <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-950/80 border border-white/20 backdrop-blur-md text-[10px] sm:text-xs font-bold text-amber-300 shadow-md">
-              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400 shrink-0" />
-              {currentSlide?.badge || "🔥 Featured Test Series"}
+          <div className="absolute top-2.5 left-2.5 right-2.5 sm:top-3.5 sm:left-3.5 sm:right-3.5 flex items-center justify-between z-20 pointer-events-none">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-amber-300 shadow-md">
+              <span className="flex h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+              {currentSlide?.badge || "🔥 Trending Mock Test"}
             </span>
-            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-950/80 border border-white/20 backdrop-blur-md text-[10px] sm:text-[11px] font-semibold text-white/90 shadow-md">
-              {currentIndex + 1} / {displaySliders.length}
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-white/90 shadow-md">
+              <span className="text-amber-400 font-bold">{String(currentIndex + 1).padStart(2, "0")}</span>
+              <span className="text-white/40 font-light">/</span>
+              <span className="text-white/80">{String(displaySliders.length).padStart(2, "0")}</span>
             </span>
           </div>
 
           {/* Bottom Content Area */}
-          <div className="absolute bottom-0 left-0 right-0 p-3.5 sm:p-7 space-y-1 sm:space-y-2">
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 space-y-1 sm:space-y-1.5 z-20 pointer-events-none">
             {currentSlide?.title && (
-              <h3 className="text-white text-sm sm:text-2xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 sm:line-clamp-none pr-16 sm:pr-0">
+              <h3 className="text-white text-sm sm:text-lg lg:text-xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 pr-16 sm:pr-0">
                 {currentSlide.title}
               </h3>
             )}
             {currentSlide?.subtitle && (
-              <p className="text-slate-200/90 text-[11px] sm:text-sm font-normal line-clamp-1 sm:line-clamp-2 max-w-xl drop-shadow">
+              <p className="text-slate-200/90 text-[11px] sm:text-xs font-normal line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-md drop-shadow">
                 {currentSlide.subtitle}
               </p>
             )}
 
             {/* Smart Interactive CTA Pill */}
-            <div className="pt-1 sm:pt-2 flex items-center gap-2 sm:gap-3">
-              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[11px] sm:text-sm shadow-md group-hover:scale-105 transition-transform">
-                <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-slate-950 shrink-0" />
-                Attempt Mock Test
-                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
-              </span>
+            <div className="pt-1 sm:pt-1.5 flex items-center gap-2 sm:gap-3 pointer-events-auto">
+              <button
+                type="button"
+                onClick={() => handleSlideClick(currentSlide?.redirectUrl)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-[11px] sm:text-xs shadow-md shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer"
+              >
+                <Play className="h-3 w-3 fill-slate-950 shrink-0" />
+                <span>Attempt Mock Test</span>
+                <ArrowRight className="h-3 w-3 shrink-0" />
+              </button>
               {currentSlide?.redirectUrl && (
-                <span className="hidden sm:inline-flex text-xs font-medium text-white/70 hover:text-white transition-colors underline decoration-white/30 underline-offset-4">
+                <span
+                  onClick={() => handleSlideClick(currentSlide?.redirectUrl)}
+                  className="hidden sm:inline-flex text-[11px] font-medium text-white/80 hover:text-white transition-colors underline decoration-white/30 underline-offset-4 cursor-pointer"
+                >
                   View details
                 </span>
               )}
             </div>
           </div>
 
-          {/* Left / Right Nav Controls - Desktop Only to keep Mobile Clean */}
+          {/* Left / Right Nav Controls - Desktop Floating Frosted Glass Buttons */}
           {displaySliders.length > 1 && (
             <>
               <button
@@ -1307,10 +1348,10 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                   e.stopPropagation()
                   prevSlide()
                 }}
-                className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md items-center justify-center text-white hover:bg-slate-950 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 backdrop-blur-md items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-30 cursor-pointer"
                 aria-label="Previous Slide"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
               <button
                 type="button"
@@ -1318,40 +1359,46 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                   e.stopPropagation()
                   nextSlide()
                 }}
-                className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950/60 border border-white/20 backdrop-blur-md items-center justify-center text-white hover:bg-slate-950 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 backdrop-blur-md items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-30 cursor-pointer"
                 aria-label="Next Slide"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </>
           )}
 
-          {/* Pure Indicator Points / Dots (No Cylindrical Container) */}
+          {/* Modern Segmented Pill Indicators */}
           {displaySliders.length > 1 && (
-            <div className="absolute bottom-3.5 right-4 sm:bottom-4 sm:right-6 flex items-center gap-2 z-10 pointer-events-auto">
-              {displaySliders.map((_, index) => (
-                <button
-                  type="button"
-                  key={index}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    goToSlide(index)
-                  }}
-                  aria-label={`Go to slide ${index + 1}`}
-                  className="p-1 group focus:outline-none cursor-pointer"
-                >
-                  <span
-                    className={`block rounded-full transition-all duration-300 ${index === currentIndex
-                      ? "w-2.5 h-2.5 bg-amber-400 shadow-md shadow-amber-400/60 ring-2 ring-amber-400/40"
-                      : "w-2 h-2 bg-white/60 group-hover:bg-white drop-shadow-sm"
+            <div className="absolute bottom-2.5 right-3 sm:bottom-3.5 sm:right-4 flex items-center gap-1.5 z-30 pointer-events-auto">
+              {displaySliders.map((_, index) => {
+                const isActive = index === currentIndex
+                return (
+                  <button
+                    type="button"
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      goToSlide(index)
+                    }}
+                    aria-label={`Go to slide ${index + 1}`}
+                    className="p-1 group focus:outline-none cursor-pointer"
+                  >
+                    <span
+                      className={`block h-1.5 rounded-full transition-all duration-300 ease-out ${
+                        isActive
+                          ? "w-6 sm:w-7 bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm shadow-amber-400/60 ring-1 ring-amber-300/40"
+                          : "w-2 bg-white/40 group-hover:bg-white/70"
                       }`}
-                  />
-                </button>
-              ))}
+                    />
+                  </button>
+                )
+              })}
             </div>
           )}
+
         </div>
       </div>
     </div>
   )
 }
+

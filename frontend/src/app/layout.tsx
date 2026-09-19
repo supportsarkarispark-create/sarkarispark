@@ -62,14 +62,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Sarkari Spark - Government Exam Preparation Platform",
-    description:
-      "Prepare for SSC, Railway, Banking, Teaching & State exams with India's best mock tests, instant solutions, and real-time All India Rank.",
-    images: ["/og-image.jpg"],
-    creator: "@SarkariSpark",
-  },
   alternates: {
     canonical: siteUrl,
   },
@@ -92,7 +84,6 @@ export default function RootLayout({
         description:
           "Online test series and preparation platform for Indian government competitive exams.",
         sameAs: [
-          "https://t.me/sarkarispark",
           "https://youtube.com/@sarkarispark",
         ],
       },

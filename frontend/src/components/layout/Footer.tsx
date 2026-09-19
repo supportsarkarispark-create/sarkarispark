@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useQuery } from "react-query"
 import { settingsAPI, examCategoryAPI } from "@/lib/api"
-import { GraduationCap, Sparkles, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, Linkedin, Send, MessageCircle } from "lucide-react"
+import { GraduationCap, Sparkles, Mail, Phone, MapPin, Facebook, Instagram, Youtube } from "lucide-react"
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -15,11 +15,8 @@ export default function Footer() {
     phone: "+91 98765 43210",
     address: "New Delhi, India",
     facebook: "",
-    twitter: "",
     instagram: "",
     youtube: "",
-    linkedin: "",
-    telegram: "",
   }
 
   // Filter categories that should show in footer
@@ -60,11 +57,8 @@ export default function Footer() {
 
   const socialLinks = [
     { icon: Facebook, href: contactInfo.facebook || "#", label: "Facebook", color: "hover:text-blue-600" },
-    { icon: Twitter, href: contactInfo.twitter || "#", label: "Twitter", color: "hover:text-blue-400" },
     { icon: Instagram, href: contactInfo.instagram || "#", label: "Instagram", color: "hover:text-pink-600" },
     { icon: Youtube, href: contactInfo.youtube || "#", label: "YouTube", color: "hover:text-red-600" },
-    { icon: Linkedin, href: contactInfo.linkedin || "#", label: "LinkedIn", color: "hover:text-blue-700" },
-    { icon: Send, href: contactInfo.telegram || "#", label: "Telegram", color: "hover:text-blue-500" },
   ]
 
   return (

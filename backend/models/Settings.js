@@ -123,11 +123,8 @@ const SettingsSchema = new mongoose.Schema({
     address: { type: String, default: 'New Delhi, India' },
     whatsapp: { type: String, default: '' },
     facebook: { type: String, default: '' },
-    twitter: { type: String, default: '' },
     instagram: { type: String, default: '' },
-    youtube: { type: String, default: '' },
-    linkedin: { type: String, default: '' },
-    telegram: { type: String, default: '' }
+    youtube: { type: String, default: '' }
   },
 
   // Subscription Pricing

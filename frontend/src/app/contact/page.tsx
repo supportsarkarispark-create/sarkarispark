@@ -13,11 +13,8 @@ import {
   MapPin,
   Send,
   Facebook,
-  Twitter,
   Instagram,
   Youtube,
-  Linkedin,
-  MessageCircle,
   GraduationCap,
   Clock,
   HelpCircle,
@@ -43,11 +40,8 @@ export default function ContactPage() {
     address: "New Delhi, India",
     whatsapp: "",
     facebook: "",
-    twitter: "",
     instagram: "",
     youtube: "",
-    linkedin: "",
-    telegram: "",
   }
 
   const faqs = Array.isArray(faqsData?.data) ? faqsData.data : Array.isArray(faqsData?.faqs) ? faqsData.faqs : []
@@ -73,11 +67,8 @@ export default function ContactPage() {
 
   const socialLinks = [
     { icon: Facebook, href: contactInfo.facebook || "#", label: "Facebook", color: "bg-blue-600 hover:bg-blue-700" },
-    { icon: Twitter, href: contactInfo.twitter || "#", label: "Twitter", color: "bg-sky-500 hover:bg-sky-600" },
     { icon: Instagram, href: contactInfo.instagram || "#", label: "Instagram", color: "bg-pink-600 hover:bg-pink-700" },
     { icon: Youtube, href: contactInfo.youtube || "#", label: "YouTube", color: "bg-red-600 hover:bg-red-700" },
-    { icon: Linkedin, href: contactInfo.linkedin || "#", label: "LinkedIn", color: "bg-blue-700 hover:bg-blue-800" },
-    { icon: MessageCircle, href: contactInfo.telegram || "#", label: "Telegram", color: "bg-blue-500 hover:bg-blue-600" },
   ]
 
   return (

@@ -520,3 +520,17 @@ html {
 .animate-marquee:active {
   animation-play-state: paused;
 }
+
+/* Slider Autoplay Progress Bar */
+@keyframes slider-progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-slider-progress {
+  animation: slider-progress 4.5s linear forwards;
+}
