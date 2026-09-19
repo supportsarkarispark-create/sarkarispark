@@ -402,7 +402,7 @@ export default function HomePage() {
       </div>
 
       {/* 2. Hero Section - Premium Visual Experience */}
-      <section className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24">
+      <section className="relative overflow-hidden pt-6 pb-6 lg:pt-10 lg:pb-8">
         {/* Ambient Gradient Glow Backgrounds */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-tr from-indigo-500/15 via-purple-500/20 to-cyan-400/15 blur-3xl -z-10 pointer-events-none" />
         <div className="absolute -top-24 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
@@ -533,7 +533,7 @@ export default function HomePage() {
       </section>
 
       {/* 3. Stats Section with Glassmorphism */}
-      <section className="py-6 sm:py-8 bg-white dark:bg-slate-900 border-y border-slate-200/80 dark:border-slate-800/80">
+      <section className="py-5 sm:py-6 bg-white dark:bg-slate-900 border-y border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
 
@@ -1218,7 +1218,7 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       {/* Main Banner Card */}
       <div className="relative bg-slate-900 border border-indigo-200/40 dark:border-slate-800 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10">
         <div
-          className="relative h-[220px] sm:h-[340px] md:h-[420px] cursor-pointer"
+          className="relative h-[220px] sm:h-[340px] md:h-[420px] lg:h-[480px] xl:h-[510px] cursor-pointer"
           onClick={handleSlideClick}
         >
           {/* Media: Video or Image */}
