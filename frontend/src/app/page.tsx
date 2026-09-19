@@ -427,12 +427,18 @@ export default function HomePage() {
 
               {/* Main Headline */}
               <div className="space-y-2 sm:space-y-3">
-                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight sm:leading-[1.15]">
-                  Abki Baar,{" "}
-                  <span className="block my-1 text-3xl sm:inline sm:my-0 sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 drop-shadow-sm">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.18]">
+                  <span className="block sm:inline text-slate-900 dark:text-white">
+                    Abki Baar,{" "}
+                  </span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 drop-shadow-xs">
                     Sarkari Naukri
                   </span>{" "}
-                  Hamaar! 🚀
+                  <span className="relative inline-block text-slate-900 dark:text-white">
+                    Hamaar!
+                    <span className="absolute -bottom-1 left-0 right-0 h-1 sm:h-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 shadow-sm" />
+                  </span>{" "}
+                  <span className="inline-block animate-pulse">🚀</span>
                 </h1>
                 <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed mx-auto lg:mx-0">
                   India ke top rankers aur subject experts dwara taiyar mock tests. Live All-India Ranking, timer, detailed bilingual solutions aur AI analytics ke sath guaranteed selection ki taiyari karein.
