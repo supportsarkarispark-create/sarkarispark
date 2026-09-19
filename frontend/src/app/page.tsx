@@ -426,20 +426,22 @@ export default function HomePage() {
                 </span>
               </div>
 
-              {/* Main Headline - Massive, Bold & Impactful */}
-              <div className="space-y-2 sm:space-y-3">
-                <h1 className="text-[42px] sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.08]">
-                  <span className="block sm:inline text-slate-900 dark:text-white">
-                    Abki Baar,{" "}
+              {/* Main Headline - Massive, Bold & Ultra-Attractive */}
+              <div className="space-y-1.5 sm:space-y-3">
+                <h1 className="font-black tracking-tight text-slate-900 dark:text-white space-y-1">
+                  <span className="block text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">
+                    Abki Baar,
                   </span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 drop-shadow-xs">
+                  <span className="block text-[32px] sm:text-5xl lg:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 drop-shadow-xs leading-[1.1]">
                     Sarkari Naukri
-                  </span>{" "}
-                  <span className="relative inline-block text-slate-900 dark:text-white">
-                    Hamaar!
-                    <span className="absolute -bottom-1.5 left-0 right-0 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 shadow-sm" />
-                  </span>{" "}
-                  <span className="inline-block animate-pulse">🚀</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-2xl sm:text-4xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight">
+                    <span className="relative">
+                      Hamaar!
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 shadow-sm" />
+                    </span>
+                    <span className="inline-block animate-bounce text-2xl sm:text-4xl">🚀</span>
+                  </span>
                 </h1>
                 <p className="text-sm sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed">
                   India ke top rankers aur subject experts dwara taiyar mock tests. Live All-India Ranking, timer, detailed bilingual solutions aur AI analytics ke sath guaranteed selection ki taiyari karein.
