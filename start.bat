@@ -5,6 +5,8 @@ echo       Starting Sarkari Spark Application
 echo ===================================================
 echo.
 
+cd /d "%~dp0"
+
 :: Ensure Node.js is in PATH
 set "PATH=%PATH%;C:\Program Files\nodejs"
 
@@ -12,16 +14,16 @@ set "PATH=%PATH%;C:\Program Files\nodejs"
 net start MongoDB >nul 2>&1
 
 echo [1/3] Starting Backend API Server (Port 5000)...
-start "Sarkari Spark - Backend" cmd /k "cd /d "%~dp0backend" && set "PATH=%%PATH%%;C:\Program Files\nodejs" && node server.js"
+start "Sarkari Spark - Backend" /D "%~dp0backend" cmd /k "title Sarkari Spark Backend && set PATH=C:\Program Files\nodejs;%%PATH%% && node server.js"
 
 echo [2/3] Starting Frontend Next.js Server (Port 3000)...
-start "Sarkari Spark - Frontend" cmd /k "cd /d "%~dp0frontend" && set "PATH=%%PATH%%;C:\Program Files\nodejs" && npm.cmd run dev"
+start "Sarkari Spark - Frontend" /D "%~dp0frontend" cmd /k "title Sarkari Spark Frontend && set PATH=C:\Program Files\nodejs;%%PATH%% && npm.cmd run dev"
 
-echo [3/3] Initializing servers... Please wait 8 seconds...
-timeout /t 8 /nobreak >nul
+echo [3/3] Initializing servers... Please wait 6 seconds...
+timeout /t 6 /nobreak >nul
 
 echo Opening browser at http://localhost:3000...
-start http://localhost:3000
+start "" "http://localhost:3000"
 
 echo.
 echo ===================================================
