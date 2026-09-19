@@ -426,9 +426,9 @@ export default function HomePage() {
                 </span>
               </div>
 
-              {/* Main Headline - Bold, Big & Premium */}
+              {/* Main Headline - Massive, Bold & Impactful */}
               <div className="space-y-2 sm:space-y-3">
-                <h1 className="text-[35px] sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                <h1 className="text-[42px] sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.08]">
                   <span className="block sm:inline text-slate-900 dark:text-white">
                     Abki Baar,{" "}
                   </span>
@@ -437,7 +437,7 @@ export default function HomePage() {
                   </span>{" "}
                   <span className="relative inline-block text-slate-900 dark:text-white">
                     Hamaar!
-                    <span className="absolute -bottom-1 left-0 right-0 h-1 sm:h-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 shadow-sm" />
+                    <span className="absolute -bottom-1.5 left-0 right-0 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 shadow-sm" />
                   </span>{" "}
                   <span className="inline-block animate-pulse">🚀</span>
                 </h1>
