@@ -41,7 +41,7 @@ export default function AboutPage() {
     title: aboutSection.mission?.title || "Our Mission",
     content:
       aboutSection.mission?.content ||
-      "To democratize exam preparation by offering accessible, high-yield practice material that bridges the gap between preparation and final selection.",
+      "To democratize exam preparation by offering accessible, high-yield practice material that bridges the gap between preparation and exam success.",
   }
 
   const vision = {

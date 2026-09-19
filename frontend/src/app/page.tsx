@@ -76,8 +76,7 @@ export default function HomePage() {
   const heroStats = {
     activeStudents: settings?.heroStats?.activeStudents !== undefined ? Number(settings.heroStats.activeStudents).toLocaleString() : "0",
     mockTests: settings?.heroStats?.mockTests !== undefined ? Number(settings.heroStats.mockTests).toLocaleString() : "0",
-    questions: settings?.heroStats?.questions !== undefined ? Number(settings.heroStats.questions).toLocaleString() : "0",
-    selections: settings?.heroStats?.selections !== undefined ? Number(settings.heroStats.selections).toLocaleString() : "0"
+    questions: settings?.heroStats?.questions !== undefined ? Number(settings.heroStats.questions).toLocaleString() : "0"
   }
 
   // Fallback rich updates if DB empty
@@ -444,7 +443,7 @@ export default function HomePage() {
                   </span>
                 </h1>
                 <p className="text-sm sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed">
-                  India ke top rankers aur subject experts dwara taiyar mock tests. Live All-India Ranking, timer, detailed bilingual solutions aur AI analytics ke sath guaranteed selection ki taiyari karein.
+                  India ke top rankers aur subject experts dwara taiyar mock tests. Live All-India Ranking, timer, detailed bilingual solutions aur AI analytics ke sath shaandaar exam taiyari karein.
                 </p>
               </div>
 
@@ -538,7 +537,7 @@ export default function HomePage() {
       {/* 3. Stats Section with Glassmorphism */}
       <section className="py-5 sm:py-6 bg-white dark:bg-slate-900 border-y border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
 
             <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-indigo-50/50 to-white dark:from-slate-800/50 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 flex items-center gap-4 hover:-translate-y-1 transition-all">
               <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-indigo-200 dark:shadow-none">
@@ -578,20 +577,6 @@ export default function HomePage() {
                 </p>
                 <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
                   Practice Questions
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-50/50 to-white dark:from-slate-800/50 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 flex items-center gap-4 hover:-translate-y-1 transition-all">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-emerald-200 dark:shadow-none">
-                <Award className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-                  {heroStats.selections}
-                </p>
-                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
-                  Final Selections
                 </p>
               </div>
             </div>

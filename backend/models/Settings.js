@@ -5,8 +5,7 @@ const SettingsSchema = new mongoose.Schema({
   heroStats: {
     activeStudents: { type: String, default: '1L+' },
     mockTests: { type: String, default: '500+' },
-    questions: { type: String, default: '50K+' },
-    selections: { type: String, default: '10K+' }
+    questions: { type: String, default: '50K+' }
   },
   
   // Exam Categories

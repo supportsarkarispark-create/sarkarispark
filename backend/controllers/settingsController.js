@@ -1,4 +1,4 @@
-const { Settings, User, Exam, Question, Result } = require('../models');
+const { Settings, User, Exam, Question } = require('../models');
 
 // @desc    Get settings
 // @route   GET /api/settings
@@ -12,11 +12,10 @@ exports.getSettings = async (req, res, next) => {
     }
 
     // Real-time live counts directly from MongoDB collections
-    const [userCount, examCount, questionCount, resultCount] = await Promise.all([
+    const [userCount, examCount, questionCount] = await Promise.all([
       User.countDocuments(),
       Exam.countDocuments({ isActive: true }),
-      Question.countDocuments(),
-      Result.countDocuments()
+      Question.countDocuments()
     ]);
 
     const settingsObj = settings.toObject();
@@ -25,8 +24,7 @@ exports.getSettings = async (req, res, next) => {
     settingsObj.heroStats = {
       activeStudents: userCount,
       mockTests: examCount,
-      questions: questionCount,
-      selections: resultCount
+      questions: questionCount
     };
 
     res.status(200).json({

@@ -46,7 +46,6 @@ export default function AdminSettingsPage() {
     activeStudents: "",
     mockTests: "",
     questions: "",
-    selections: "",
   })
 
   const [heroBadge, setHeroBadge] = useState("")
@@ -74,7 +73,6 @@ export default function AdminSettingsPage() {
         activeStudents: "",
         mockTests: "",
         questions: "",
-        selections: "",
       })
       setHeroBadge(settings.heroBadge || "")
       setHeroTitle(settings.heroTitle || { line1: "", line2: "" })
@@ -178,7 +176,7 @@ export default function AdminSettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Active Students</label>
                     <Input
@@ -207,16 +205,6 @@ export default function AdminSettingsPage() {
                         setHeroStats({ ...heroStats, questions: e.target.value })
                       }
                       placeholder="e.g., 50K+"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Selections</label>
-                    <Input
-                      value={heroStats.selections}
-                      onChange={(e) =>
-                        setHeroStats({ ...heroStats, selections: e.target.value })
-                      }
-                      placeholder="e.g., 10K+"
                     />
                   </div>
                 </div>
