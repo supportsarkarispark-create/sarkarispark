@@ -73,7 +73,8 @@ export default function Navbar() {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <>
+      <nav className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -222,6 +223,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+    </nav>
 
       {/* Mobile Drawer (Slide-Over Backdrop + Panel) */}
       {isMenuOpen && (
@@ -390,8 +392,8 @@ export default function Navbar() {
 
       {/* Cylindrical Floating Mobile Bottom Navigation Bar (Hidden on Admin pages) */}
       {!pathname?.startsWith("/admin") && (
-        <div className="md:hidden fixed bottom-3 inset-x-3 sm:inset-x-6 z-40 max-w-md mx-auto pointer-events-none">
-          <div className="pointer-events-auto bg-background/90 dark:bg-slate-900/90 backdrop-blur-xl border border-border/80 dark:border-white/10 shadow-[0_10px_35px_rgba(0,0,0,0.18)] dark:shadow-[0_10px_35px_rgba(0,0,0,0.5)] rounded-full px-2.5 py-1.5 ring-1 ring-black/5 dark:ring-white/5">
+        <div className="md:hidden fixed bottom-3 left-3 right-3 sm:left-6 sm:right-6 z-50 max-w-md mx-auto pointer-events-none">
+          <div className="pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.5)] rounded-full px-2.5 py-1.5 ring-1 ring-black/5 dark:ring-white/5">
             <div className="grid grid-cols-5 items-center">
               {/* 1. Home */}
               <Link
@@ -473,6 +475,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </nav>
+    </>
   )
 }
