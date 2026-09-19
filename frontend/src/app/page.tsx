@@ -482,26 +482,26 @@ export default function HomePage() {
                 </div>
               </form>
 
-              {/* CTA Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4 pt-1">
-                <Link href="/exams" className="w-full sm:w-auto">
+              {/* CTA Action Buttons - Same Line on Mobile */}
+              <div className="flex flex-row items-center justify-start gap-2 sm:gap-4 pt-1 w-full max-w-md sm:max-w-lg">
+                <Link href="/exams" className="flex-1 sm:flex-initial sm:w-auto">
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto gap-2 px-8 py-6 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-base shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all"
+                    className="w-full sm:w-auto gap-1 sm:gap-2 px-2.5 xs:px-3.5 sm:px-8 py-2.5 sm:py-5 lg:py-6 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-[11px] xs:text-xs sm:text-base shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all whitespace-nowrap"
                   >
-                    <Play className="h-4 w-4 fill-white" />
-                    Start Mock Test
-                    <ArrowRight className="h-4 w-4" />
+                    <Play className="h-3 w-3 sm:h-4 sm:w-4 fill-white shrink-0" />
+                    <span>Start Mock Test</span>
+                    <ArrowRight className="hidden sm:inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                   </Button>
                 </Link>
-                <Link href="/latest-jobs" className="w-full sm:w-auto">
+                <Link href="/latest-jobs" className="flex-1 sm:flex-initial sm:w-auto">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto gap-2 px-6 py-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-base"
+                    className="w-full sm:w-auto gap-1 sm:gap-2 px-2.5 xs:px-3.5 sm:px-6 py-2.5 sm:py-5 lg:py-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-[11px] xs:text-xs sm:text-base whitespace-nowrap shadow-xs"
                   >
-                    <BriefcaseIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    Latest Vacancies
+                    <BriefcaseIcon className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <span>Latest Vacancies</span>
                   </Button>
                 </Link>
               </div>
