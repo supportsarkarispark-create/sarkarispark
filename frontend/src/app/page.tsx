@@ -67,10 +67,10 @@ export default function HomePage() {
   const faqs = Array.isArray(faqsData?.data?.data)
     ? faqsData.data.data
     : Array.isArray(faqsData?.data?.faqs)
-    ? faqsData.data.faqs
-    : Array.isArray(faqsData?.data)
-    ? faqsData.data
-    : []
+      ? faqsData.data.faqs
+      : Array.isArray(faqsData?.data)
+        ? faqsData.data
+        : []
 
   // Live stats from Database
   const heroStats = {
@@ -410,12 +410,12 @@ export default function HomePage() {
 
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            
+
             {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
-              
+            <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left">
+
               {/* Trust Badge */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm text-[11px] sm:text-xs md:text-sm font-semibold text-indigo-900 dark:text-indigo-300 mx-auto lg:mx-0 whitespace-nowrap">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm text-[11px] sm:text-xs md:text-sm font-semibold text-indigo-900 dark:text-indigo-300 whitespace-nowrap">
                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
                 <span className="text-sm sm:text-base shrink-0">🇮🇳</span>
                 <span className="whitespace-nowrap">India&apos;s #1 Govt Exam Mock Test Portal</span>
@@ -440,13 +440,13 @@ export default function HomePage() {
                   </span>{" "}
                   <span className="inline-block animate-pulse">🚀</span>
                 </h1>
-                <p className="text-base sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed mx-auto lg:mx-0">
+                <p className="text-sm sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed">
                   India ke top rankers aur subject experts dwara taiyar mock tests. Live All-India Ranking, timer, detailed bilingual solutions aur AI analytics ke sath guaranteed selection ki taiyari karein.
                 </p>
               </div>
 
               {/* Quick Exam Search Bar */}
-              <form onSubmit={handleSearchSubmit} className="max-w-xl mx-auto lg:mx-0">
+              <form onSubmit={handleSearchSubmit} className="max-w-xl">
                 <div className="relative flex items-center p-1.5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-indigo-200/80 dark:border-slate-800 shadow-xl shadow-indigo-100/50 dark:shadow-none focus-within:border-indigo-600 transition-all">
                   <div className="pl-3 text-slate-400">
                     <Search className="h-5 w-5" />
@@ -466,7 +466,7 @@ export default function HomePage() {
                   </Button>
                 </div>
                 {/* Trending Quick Chips */}
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 text-xs text-slate-500 dark:text-slate-400 justify-center lg:justify-start">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 text-xs text-slate-500 dark:text-slate-400 justify-start">
                   <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 shrink-0">⚡ Trending:</span>
                   {["UP Police", "SSC CGL", "RRB NTPC", "IBPS PO", "CTET"].map((tag) => (
                     <button
@@ -482,7 +482,7 @@ export default function HomePage() {
               </form>
 
               {/* CTA Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-1">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4 pt-1">
                 <Link href="/exams" className="w-full sm:w-auto">
                   <Button
                     size="lg"
@@ -506,7 +506,7 @@ export default function HomePage() {
               </div>
 
               {/* Trust Micro-Bullets */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-2.5 pt-2 max-w-lg mx-auto lg:mx-0">
+              <div className="flex flex-wrap items-center justify-start gap-2 sm:gap-2.5 pt-2 max-w-lg">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   <span>Curated by Rankers</span>
@@ -536,7 +536,7 @@ export default function HomePage() {
       <section className="py-6 sm:py-8 bg-white dark:bg-slate-900 border-y border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            
+
             <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-indigo-50/50 to-white dark:from-slate-800/50 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 flex items-center gap-4 hover:-translate-y-1 transition-all">
               <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-indigo-200 dark:shadow-none">
                 <Users className="h-6 w-6" />
@@ -600,7 +600,7 @@ export default function HomePage() {
       {/* 4. Interactive Popular Mock Tests with Category Tabs */}
       <section className="py-12 sm:py-20">
         <div className="container mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-xs uppercase tracking-wider mb-3">
               <Sparkles className="h-3.5 w-3.5" /> High-Yield Preparation
@@ -625,11 +625,10 @@ export default function HomePage() {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 whitespace-nowrap ${
-                    selectedCategory === cat.id
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25 scale-105"
-                      : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-800"
-                  }`}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 whitespace-nowrap ${selectedCategory === cat.id
+                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25 scale-105"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-800"
+                    }`}
                 >
                   {cat.label}
                 </button>
@@ -717,7 +716,7 @@ export default function HomePage() {
       {/* 5. Latest Updates Bento Grid (Jobs / Admit Cards / Results / Exams) */}
       <section className="py-12 sm:py-16 bg-gradient-to-b from-slate-100/60 to-white dark:from-slate-900/40 dark:to-slate-950 border-t border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4">
-          
+
           <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs uppercase tracking-wider mb-2">
@@ -733,7 +732,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             {/* Box 1: Latest Jobs */}
             <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-purple-100 dark:border-slate-800 p-5 shadow-sm hover:shadow-lg transition-all">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-purple-100 dark:border-slate-800">
@@ -862,7 +861,7 @@ export default function HomePage() {
       {/* 6. Why Choose Sarkari Spark - Feature Bento Grid */}
       <section className="py-14 sm:py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold text-xs uppercase tracking-wider mb-3">
               <Shield className="h-3.5 w-3.5" /> Why Aspirants Trust Us
@@ -876,7 +875,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
+
             <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-850 dark:to-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-xl hover:-translate-y-1 transition-all group">
               <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center mb-4 shadow-lg shadow-blue-200 dark:shadow-none group-hover:scale-110 transition-transform">
                 <Clock className="h-6 w-6" />
@@ -957,7 +956,7 @@ export default function HomePage() {
       {/* 7. Success Stories & Student Reviews */}
       <section className="py-14 sm:py-20 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold text-xs uppercase tracking-wider mb-3">
               <Star className="h-3.5 w-3.5 fill-amber-500" /> Verified Aspirants
@@ -1007,7 +1006,7 @@ export default function HomePage() {
       {/* 8. Frequently Asked Questions (FAQ) Section */}
       <section className="py-14 sm:py-20 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800/80">
         <div className="container mx-auto px-4 max-w-4xl">
-          
+
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-xs uppercase tracking-wider mb-3">
               <HelpCircle className="h-3.5 w-3.5" /> FAQs
@@ -1023,11 +1022,10 @@ export default function HomePage() {
               return (
                 <div
                   key={faq._id || idx}
-                  className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                    isOpen
-                      ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-md"
-                      : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700"
-                  }`}
+                  className={`rounded-2xl border transition-all duration-200 overflow-hidden ${isOpen
+                    ? "border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-md"
+                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700"
+                    }`}
                 >
                   <button
                     onClick={() => handleToggleFaq(faq._id)}
@@ -1058,7 +1056,7 @@ export default function HomePage() {
       {/* 9. Final High-Conversion CTA Banner */}
       <section className="relative overflow-hidden py-16 sm:py-20 bg-gradient-to-r from-indigo-800 via-purple-800 to-indigo-950 text-white border-t border-indigo-500/30">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-10" />
-        
+
         <div className="container mx-auto px-4 text-center relative z-10 max-w-4xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-wider mb-4">
             🚀 EXAM PREPARATION PLATFORM
@@ -1329,11 +1327,10 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                   goToSlide(index)
                 }}
                 aria-label={`Go to slide ${index + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-amber-400 w-7 shadow-sm"
-                    : "bg-white/40 hover:bg-white/75 w-2"
-                }`}
+                className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                  ? "bg-amber-400 w-7 shadow-sm"
+                  : "bg-white/40 hover:bg-white/75 w-2"
+                  }`}
               />
             ))}
           </div>
