@@ -333,7 +333,7 @@ export default function PaymentPage() {
 
   const initiateRazorpay = (order: any, payment: any, currentUser: any) => {
     const options = {
-      key: order.key,
+      key: order.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TeEhKi4wCZxUnV",
       amount: order.amount,
       currency: order.currency,
       name: "Sarkari Spark",

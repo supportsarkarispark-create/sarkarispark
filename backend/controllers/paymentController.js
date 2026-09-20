@@ -10,8 +10,8 @@ console.log('[DEBUG] RAZORPAY_KEY_SECRET:', process.env.RAZORPAY_KEY_SECRET ? 'S
 
 // Initialize Razorpay with safe fallbacks so server never crashes on startup
 const getRazorpay = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_SsjdRz56NfntbK';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || '0cq2mzTFguSP77G18wl6Qhfs';
+  const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_live_TeEhKi4wCZxUnV';
+  const key_secret = process.env.RAZORPAY_KEY_SECRET || '0TKafOi6GFkC2rMLg75BCY1R';
   return new Razorpay({ key_id, key_secret });
 };
 
@@ -346,7 +346,7 @@ exports.createOrder = async (req, res, next) => {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
-        key: process.env.RAZORPAY_KEY_ID || 'rzp_test_SsjdRz56NfntbK'
+        key: process.env.RAZORPAY_KEY_ID || 'rzp_live_TeEhKi4wCZxUnV'
       },
       payment: {
         id: payment._id,
@@ -379,7 +379,7 @@ exports.verifyPayment = async (req, res, next) => {
     // Verify signature
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '0TKafOi6GFkC2rMLg75BCY1R')
       .update(body.toString())
       .digest('hex');
 
