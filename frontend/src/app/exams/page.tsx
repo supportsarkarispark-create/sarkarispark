@@ -60,16 +60,30 @@ export default function ExamsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [openItems, setOpenItems] = useState<Set<string>>(new Set())
 
-  // Fetch FAQs
-  const { data: faqsData, isLoading: faqsLoading } = useQuery(
-    ["faqs"],
-    async () => {
-      const response = await api.get("/faqs")
-      return response.data
+  // Static FAQs
+  const faqs = [
+    {
+      _id: "faq-1",
+      question: "Kya Sarkari Spark par Free Mock Tests available hain?",
+      answer: "Haan! Har ek exam category (SSC, UP Police, Railway, Banking) ke pehle 1 se 2 mock tests bilkul 100% FREE hain taaki aap platform aur question quality bina kisi payment ke test kar sakein."
+    },
+    {
+      _id: "faq-2",
+      question: "Test submit karne ke baad result kab milta hai?",
+      answer: "Test submit karte hi aapko turant Instant Scorecard, All-India Rank, Section-wise Accuracy, Percentile aur sabhi sawalon ke detailed step-by-step solutions mil jaate hain."
+    },
+    {
+      _id: "faq-3",
+      question: "Kya sawal Hindi aur English dono bhashao me hain?",
+      answer: "Ji bilkul! Sarkari Spark ke sabhi mock tests aur solutions 100% Bilingual (Hindi + English) hain. Aap exam dete samay bhi ek click me language badal sakte hain."
+    },
+    {
+      _id: "faq-4",
+      question: "Kya main mobile phone par bhi test de sakta hoon?",
+      answer: "Haan, Sarkari Spark mobile, tablet aur laptop har device ke liye fully optimized hai. Aap bina kisi rukawat ke apne phone browser me test attempt kar sakte hain."
     }
-  )
-
-  const faqs = Array.isArray(faqsData?.data) ? faqsData.data : Array.isArray(faqsData?.faqs) ? faqsData.faqs : []
+  ]
+  const faqsLoading = false
 
   const handleMouseEnter = (id: string) => {
     setOpenItems(new Set([id]))

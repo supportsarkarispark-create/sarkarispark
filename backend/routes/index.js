@@ -17,7 +17,6 @@ const studyMaterialRoutes = require('./studyMaterials');
 const latestJobRoutes = require('./latestJobs');
 const mediaRoutes = require('./mediaRoutes');
 const sarkariAdmitCardRoutes = require('./sarkariAdmitCards');
-const faqRoutes = require('./faqs');
 const feedbackRoutes = require('./feedbackRoutes');
 const couponRoutes = require('./coupons');
 const sarkariWorkRoutes = require('./sarkariWorks');
@@ -42,7 +41,6 @@ module.exports = {
   latestJobRoutes,
   mediaRoutes,
   sarkariAdmitCardRoutes,
-  faqRoutes,
   feedbackRoutes,
   couponRoutes,
   sarkariWorkRoutes

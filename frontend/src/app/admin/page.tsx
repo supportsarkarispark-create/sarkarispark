@@ -548,17 +548,6 @@ export default function AdminDashboard() {
       color: "from-amber-600 to-yellow-600",
       accent: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
     },
-    {
-      id: "faqs",
-      title: "FAQs Management",
-      subtitle: "Student inquiries & bilingual answers",
-      href: "/admin/faqs",
-      category: "business",
-      categoryName: "Monetization & Engagement",
-      icon: HelpCircle,
-      color: "from-indigo-600 to-violet-700",
-      accent: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300",
-    },
   ]
 
   // Filter modules based on search

@@ -28,7 +28,6 @@ const {
   latestJobRoutes,
   mediaRoutes,
   sarkariAdmitCardRoutes,
-  faqRoutes,
   feedbackRoutes,
   couponRoutes,
   sarkariWorkRoutes
@@ -103,7 +102,6 @@ app.use('/api/study-materials', studyMaterialRoutes);
 app.use('/api/latest-jobs', latestJobRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/sarkari-admit-cards', sarkariAdmitCardRoutes);
-app.use('/api/faqs', faqRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/sarkari-works', sarkariWorkRoutes);

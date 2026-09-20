@@ -59,18 +59,10 @@ export default function HomePage() {
   const { data: latestJobsData } = useQuery(["latest-jobs"], () => latestJobsAPI.getLatestJobs({ limit: 6 }))
   const { data: sarkariAdmitCardsData } = useQuery(["sarkari-admit-cards"], () => sarkariAdmitCardAPI.getSarkariAdmitCards({ limit: 6 }))
   const { data: examsData } = useQuery(["exams"], () => examsAPI.getExams({ limit: 12 }))
-  const { data: faqsData, isLoading: faqsLoading } = useQuery(["faqs"], () => api.get("/faqs"))
 
   const settings = settingsData?.data?.settings
   const sliders = slidersData?.data?.sliders || []
   const feedback = feedbackData?.data?.feedback || []
-  const faqs = Array.isArray(faqsData?.data?.data)
-    ? faqsData.data.data
-    : Array.isArray(faqsData?.data?.faqs)
-      ? faqsData.data.faqs
-      : Array.isArray(faqsData?.data)
-        ? faqsData.data
-        : []
 
   // Live stats from Database
   const heroStats = {
@@ -300,7 +292,7 @@ export default function HomePage() {
     }
   ]
 
-  const displayFaqs = faqs.length > 0 ? faqs : defaultFaqs
+  const displayFaqs = defaultFaqs
 
   const handleToggleFaq = (id: string) => {
     const updated = new Set(openItems)
