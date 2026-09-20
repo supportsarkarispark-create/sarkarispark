@@ -53,7 +53,7 @@ export default function HomePage() {
 
   // API Queries
   const { data: settingsData } = useQuery(["settings"], () => settingsAPI.getSettings())
-  const { data: slidersData } = useQuery(["sliders"], () => sliderAPI.getSliders())
+  const { data: slidersData, isLoading: slidersLoading } = useQuery(["sliders"], () => sliderAPI.getSliders())
   const { data: feedbackData } = useQuery(["approved-feedback"], feedbackAPI.getApproved)
   const { data: govResultsData } = useQuery(["gov-results"], () => govResultsAPI.getGovResults({ limit: 6 }))
   const { data: latestJobsData } = useQuery(["latest-jobs"], () => latestJobsAPI.getLatestJobs({ limit: 6 }))
@@ -519,7 +519,7 @@ export default function HomePage() {
 
             {/* Right Column: Image Banner Slider (Connected to Admin Panel) */}
             <div className="lg:col-span-6 xl:col-span-6 relative w-full flex justify-center lg:justify-end">
-              <HeroSlider sliders={sliders} />
+              <HeroSlider sliders={sliders} isLoading={slidersLoading} />
             </div>
 
           </div>
@@ -1104,44 +1104,103 @@ function BriefcaseIcon(props: any) {
   )
 }
 
+// Sarkari Spark Watermark Placeholder Component (Branded Loading & Empty State)
+function SarkariSparkWatermark({ isAnimated = false }: { isAnimated?: boolean }) {
+  return (
+    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950/90 select-none">
+      {/* Ambient background glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.18),transparent_70%)] pointer-events-none" />
+      <div className="absolute -top-20 -left-20 w-44 h-44 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Decorative dot matrix pattern */}
+      <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+      {/* Watermark Branding Core */}
+      <div className={`relative z-10 flex flex-col items-center justify-center text-center px-4 transition-all duration-700 ${isAnimated ? "animate-pulse" : ""}`}>
+        {/* Logo Badge */}
+        <div className="relative mb-3 sm:mb-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-amber-500/20 border border-white/15 backdrop-blur-md flex items-center justify-center shadow-xl shadow-indigo-950/40 ring-1 ring-white/10">
+            <GraduationCap className="h-7 w-7 sm:h-9 sm:w-9 text-indigo-400 drop-shadow" />
+          </div>
+          <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-amber-400 drop-shadow" />
+        </div>
+
+        {/* Brand Name Typography */}
+        <div className="flex items-center gap-2">
+          <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-widest uppercase bg-gradient-to-r from-white via-white/80 to-white/60 bg-clip-text text-transparent drop-shadow-sm">
+            SARKARI
+          </span>
+          <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-widest uppercase bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-sm">
+            SPARK
+          </span>
+        </div>
+
+        {/* Subtitle / Status */}
+        <p className="mt-1 text-[10px] sm:text-xs tracking-[0.25em] uppercase font-semibold text-slate-400">
+          {isAnimated ? "Loading Banners..." : "Govt Exam Mock Test Portal"}
+        </p>
+
+        {isAnimated && (
+          <div className="mt-3.5 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+            <span className="text-[11px] text-slate-300 font-medium">Please wait...</span>
+          </div>
+        )}
+      </div>
+
+      {/* Watermark footer link */}
+      <div className="absolute bottom-2.5 right-3.5 text-[9px] font-mono tracking-widest text-slate-500/50 uppercase pointer-events-none">
+        sarkarispark.com
+      </div>
+    </div>
+  )
+}
+
 // Hero Slider Component (Dynamically connected to Admin Panel via /api/sliders)
-function HeroSlider({ sliders }: { sliders: any[] }) {
+function HeroSlider({ sliders, isLoading }: { sliders: any[]; isLoading?: boolean }) {
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
-  // Curated fallback slides if database has no active slides
-  const defaultFallbackSliders = [
-    {
-      _id: "default-1",
-      title: "UP Police Constable 2026 Special Batch",
-      subtitle: "60,000+ Vacancies • 25 Full Length Mock Tests with All India Rank",
-      image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop",
-      redirectUrl: "/exams",
-    },
-    {
-      _id: "default-2",
-      title: "SSC CGL 2026 Tier-1 Mega Mock Series",
-      subtitle: "Exact TCS Exam Pattern • Real Timer & Negative Marking Simulation",
-      image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200&auto=format&fit=crop",
-      redirectUrl: "/exams",
-    },
-    {
-      _id: "default-3",
-      title: "Railway RRB NTPC & Group D Test Series",
-      subtitle: "Previous 10 Years Solved Papers (PYQs) • 100% Bilingual in Hindi & English",
-      image: "https://images.unsplash.com/photo-1513258496099-48168024aec0?q=80&w=1200&auto=format&fit=crop",
-      redirectUrl: "/exams",
-    }
-  ]
-
   const activeSliders = (Array.isArray(sliders) && sliders.length > 0)
     ? sliders.filter((s) => s.isActive).sort((a, b) => (a.order || 0) - (b.order || 0))
     : []
 
-  const displaySliders = activeSliders.length > 0 ? activeSliders : defaultFallbackSliders
+  // When loading sliders from API: show Sarkari Spark animated watermark
+  if (isLoading) {
+    return (
+      <div className="relative w-full max-w-xl mx-auto lg:max-w-none group select-none">
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/25 rounded-[22px] sm:rounded-[26px] blur-lg -z-10 opacity-60" />
+        <div className="relative p-1 sm:p-1.5 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-white/90 via-white/50 to-white/20 dark:from-slate-700/60 dark:via-slate-800/40 dark:to-slate-900/60 shadow-xl shadow-indigo-950/10 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md">
+          <div className="relative w-full h-[230px] sm:h-[280px] md:h-[330px] lg:h-[360px] xl:h-[390px] 2xl:h-[410px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
+            <SarkariSparkWatermark isAnimated={true} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // When not loading and no active slides exist in database: show clean static Sarkari Spark watermark
+  if (activeSliders.length === 0) {
+    return (
+      <div
+        className="relative w-full max-w-xl mx-auto lg:max-w-none group select-none cursor-pointer"
+        onClick={() => router.push("/exams")}
+      >
+        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/25 rounded-[22px] sm:rounded-[26px] blur-lg -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="relative p-1 sm:p-1.5 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-white/90 via-white/50 to-white/20 dark:from-slate-700/60 dark:via-slate-800/40 dark:to-slate-900/60 shadow-xl shadow-indigo-950/10 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md">
+          <div className="relative w-full h-[230px] sm:h-[280px] md:h-[330px] lg:h-[360px] xl:h-[390px] 2xl:h-[410px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
+            <SarkariSparkWatermark isAnimated={false} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const displaySliders = activeSliders
 
   useEffect(() => {
     if (isPaused || displaySliders.length <= 1) return
@@ -1252,24 +1311,28 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                 }`}
                 onClick={() => handleSlideClick(slide?.redirectUrl)}
               >
-                {/* Media: Video or Image with gentle scale */}
+                {/* Underlying Sarkari Spark Watermark while slide image loads */}
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                  <SarkariSparkWatermark isAnimated={false} />
+                </div>
+
+                {/* Media: Video or Image */}
                 {videoUrl ? (
                   <video
                     src={videoUrl}
                     autoPlay
                     muted
                     onEnded={nextSlide}
-                    className="w-full h-full object-cover"
+                    className="relative z-10 w-full h-full object-cover"
                   />
                 ) : (
                   <img
                     src={imageUrl}
-                    alt={slide?.title || "Sarkari Spark Mock Test Banner"}
+                    alt={slide?.title || "Sarkari Spark Banner"}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop"
+                      (e.target as HTMLImageElement).style.display = "none"
                     }}
-                    className="w-full h-full object-cover transform transition-transform duration-1000 ease-out group-hover:scale-105"
+                    className="relative z-10 w-full h-full object-cover transform transition-transform duration-1000 ease-out group-hover:scale-105"
                   />
                 )}
               </div>
