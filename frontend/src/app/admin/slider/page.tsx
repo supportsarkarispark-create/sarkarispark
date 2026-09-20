@@ -12,17 +12,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Switch } from "@/components/ui/Switch"
 import { sliderAPI, getImageUrl as getApiImageUrl } from "@/lib/api"
 import { toast } from "react-hot-toast"
-import ImagePicker from "@/components/admin/ImagePicker"
 import {
   Plus,
   Pencil,
   Trash2,
   ArrowLeft,
   X,
-  GripVertical,
   ChevronLeft,
   ChevronRight,
-  Image as ImageIcon,
+  Link as LinkIcon,
+  Upload,
+  Video,
+  ExternalLink,
+  GraduationCap,
+  Sparkles,
 } from "lucide-react"
 
 interface SliderForm {
@@ -56,6 +59,7 @@ export default function SliderAdminPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
   const { user, isLoading: authLoading } = useAuth()
   const isAdmin = user?.role === "admin" || user?.role === "superadmin"
 
@@ -64,10 +68,15 @@ export default function SliderAdminPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedSlide, setSelectedSlide] = useState<SliderForm | null>(null)
   const [formData, setFormData] = useState<SliderForm>(EMPTY_FORM)
+
+  // Media input mode: "url" (default, great for ImgBB/Cloudinary) or "upload"
+  const [imageMode, setImageMode] = useState<"url" | "upload">("url")
+  const [videoMode, setVideoMode] = useState<"url" | "upload">("url")
+  const [showVideoOptions, setShowVideoOptions] = useState(false)
+
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [previewIndex, setPreviewIndex] = useState(0)
-  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false)
 
   // Redirect if not admin
   useEffect(() => {
@@ -86,14 +95,14 @@ export default function SliderAdminPage() {
   )
 
   const sliders = slidersData?.data?.sliders || []
-  const activeSliders = sliders.filter((s: SliderForm) => s.isActive)
+  const activeSliders = sliders.filter((s: SliderForm) => s.isActive).sort((a: SliderForm, b: SliderForm) => (a.order || 0) - (b.order || 0))
 
   // Mutations
   const createMutation = useMutation(
     (formDataToSend: FormData) => sliderAPI.createSlider(formDataToSend),
     {
       onSuccess: () => {
-        toast.success("Slide added successfully")
+        toast.success("Slide banner added successfully!")
         queryClient.invalidateQueries(["admin-sliders"])
         queryClient.invalidateQueries(["sliders"])
         setIsAddDialogOpen(false)
@@ -112,15 +121,16 @@ export default function SliderAdminPage() {
       sliderAPI.updateSlider(id, formDataToSend),
     {
       onSuccess: () => {
-        toast.success("Slide updated successfully")
+        toast.success("Slide banner updated successfully!")
         queryClient.invalidateQueries(["admin-sliders"])
         queryClient.invalidateQueries(["sliders"])
         setIsEditDialogOpen(false)
         setSelectedSlide(null)
         resetForm()
       },
-      onError: () => {
-        toast.error("Failed to update slide")
+      onError: (error: any) => {
+        const message = error?.response?.data?.message || "Failed to update slide"
+        toast.error(message)
       },
     }
   )
@@ -129,7 +139,7 @@ export default function SliderAdminPage() {
     (id: string) => sliderAPI.deleteSlider(id),
     {
       onSuccess: () => {
-        toast.success("Slide deleted successfully")
+        toast.success("Slide deleted successfully!")
         queryClient.invalidateQueries(["admin-sliders"])
         queryClient.invalidateQueries(["sliders"])
         setIsDeleteDialogOpen(false)
@@ -145,6 +155,11 @@ export default function SliderAdminPage() {
     setFormData(EMPTY_FORM)
     setImagePreview(null)
     setVideoPreview(null)
+    setImageMode("url")
+    setVideoMode("url")
+    setShowVideoOptions(false)
+    if (fileInputRef.current) fileInputRef.current.value = ""
+    if (videoInputRef.current) videoInputRef.current.value = ""
   }
 
   const handleAddClick = () => {
@@ -159,8 +174,11 @@ export default function SliderAdminPage() {
       imageFile: null,
       videoFile: null,
     })
-    setImagePreview(slide.image || null)
-    setVideoPreview(slide.video || null)
+    setImagePreview(slide.image ? getApiImageUrl(slide.image) : null)
+    setVideoPreview(slide.video ? getApiImageUrl(slide.video) : null)
+    setImageMode(slide.image?.startsWith("http") ? "url" : "upload")
+    setVideoMode(slide.video?.startsWith("http") ? "url" : "upload")
+    setShowVideoOptions(Boolean(slide.video))
     setIsEditDialogOpen(true)
   }
 
@@ -169,120 +187,52 @@ export default function SliderAdminPage() {
     setIsDeleteDialogOpen(true)
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeleteConfirm = () => {
+    if (selectedSlide?._id) {
+      deleteMutation.mutate(selectedSlide._id)
+    }
+  }
+
+  // Handle URL changes
+  const handleImageUrlChange = (url: string) => {
+    setFormData((prev) => ({ ...prev, image: url.trim(), imageFile: null }))
+    setImagePreview(url.trim() ? getApiImageUrl(url.trim()) : null)
+  }
+
+  const handleVideoUrlChange = (url: string) => {
+    setFormData((prev) => ({ ...prev, video: url.trim(), videoFile: null }))
+    setVideoPreview(url.trim() ? getApiImageUrl(url.trim()) : null)
+  }
+
+  // Handle local file uploads
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Create a temporary image to get dimensions
-      const img = new Image()
-      const url = URL.createObjectURL(file)
-      
-      img.onload = () => {
-        try {
-          // Calculate aspect ratio for slider (16:9 = 1920x1080)
-          const targetWidth = 1920
-          const targetHeight = 1080
-          const targetAspectRatio = targetWidth / targetHeight
-          
-          // Create canvas for cropping
-          const canvas = document.createElement('canvas')
-          const ctx = canvas.getContext('2d')
-          
-          let sourceX = 0
-          let sourceY = 0
-          let sourceWidth = img.width
-          let sourceHeight = img.height
-          
-          const imageAspectRatio = img.width / img.height
-          
-          // Calculate crop dimensions to match 16:9 aspect ratio
-          if (imageAspectRatio > targetAspectRatio) {
-            // Image is wider than target, crop sides
-            sourceWidth = img.height * targetAspectRatio
-            sourceX = (img.width - sourceWidth) / 2
-          } else {
-            // Image is taller than target, crop top/bottom
-            sourceHeight = img.width / targetAspectRatio
-            sourceY = (img.height - sourceHeight) / 2
-          }
-          
-          canvas.width = targetWidth
-          canvas.height = targetHeight
-          
-          // Draw cropped image to canvas
-          if (ctx) {
-            ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight)
-            
-            // Convert canvas to blob
-            canvas.toBlob((blob) => {
-              if (blob) {
-                const croppedFile = new File([blob], file.name, { type: file.type })
-                setFormData({ ...formData, imageFile: croppedFile })
-                const previewUrl = URL.createObjectURL(croppedFile)
-                setImagePreview(previewUrl)
-              } else {
-                // Fallback to original file if blob conversion fails
-                setFormData({ ...formData, imageFile: file })
-                const previewUrl = URL.createObjectURL(file)
-                setImagePreview(previewUrl)
-              }
-              URL.revokeObjectURL(url)
-            }, file.type, 0.95)
-          } else {
-            // Fallback if canvas context is not available
-            setFormData({ ...formData, imageFile: file })
-            const previewUrl = URL.createObjectURL(file)
-            setImagePreview(previewUrl)
-            URL.revokeObjectURL(url)
-          }
-        } catch (error) {
-          console.error('Image cropping error:', error)
-          // Fallback to original file if cropping fails
-          setFormData({ ...formData, imageFile: file })
-          const previewUrl = URL.createObjectURL(file)
-          setImagePreview(previewUrl)
-          URL.revokeObjectURL(url)
-        }
-      }
-      
-      img.onerror = () => {
-        console.error('Image load error')
-        // Fallback to original file if image load fails
-        setFormData({ ...formData, imageFile: file })
-        const previewUrl = URL.createObjectURL(file)
-        setImagePreview(previewUrl)
-        URL.revokeObjectURL(url)
-      }
-      
-      img.src = url
+      setFormData((prev) => ({ ...prev, imageFile: file, image: "" }))
+      const previewUrl = URL.createObjectURL(file)
+      setImagePreview(previewUrl)
     }
   }
 
   const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setFormData({ ...formData, videoFile: file })
+      setFormData((prev) => ({ ...prev, videoFile: file, video: "" }))
       const previewUrl = URL.createObjectURL(file)
       setVideoPreview(previewUrl)
     }
   }
 
   const handleRemoveImage = () => {
-    setFormData({ ...formData, image: "", imageFile: null })
+    setFormData((prev) => ({ ...prev, image: "", imageFile: null }))
     setImagePreview(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   const handleRemoveVideo = () => {
-    setFormData({ ...formData, video: "", videoFile: null })
+    setFormData((prev) => ({ ...prev, video: "", videoFile: null }))
     setVideoPreview(null)
-  }
-
-  const handleImageSelect = (imageUrl: string) => {
-    setFormData({ ...formData, image: imageUrl, imageFile: null })
-    setImagePreview(getApiImageUrl(imageUrl))
-    setIsImagePickerOpen(false)
+    if (videoInputRef.current) videoInputRef.current.value = ""
   }
 
   const prepareFormData = (): FormData => {
@@ -290,22 +240,24 @@ export default function SliderAdminPage() {
     formDataToSend.append("title", formData.title || "")
     formDataToSend.append("subtitle", formData.subtitle || "")
     formDataToSend.append("redirectUrl", formData.redirectUrl || "")
-    formDataToSend.append("videoDuration", String(formData.videoDuration || 0))
+    formDataToSend.append("videoDuration", "0")
     formDataToSend.append("isActive", String(formData.isActive))
     formDataToSend.append("order", String(formData.order || 0))
 
-    // Handle image
+    // Handle Image: Send file if uploaded, otherwise send URL
     if (formData.imageFile) {
       formDataToSend.append("image", formData.imageFile)
-    } else if (formData.image && typeof formData.image === "string") {
+    } else if (formData.image) {
       formDataToSend.append("imageUrl", formData.image)
+      formDataToSend.append("image", formData.image)
     }
 
-    // Handle video
+    // Handle Video: Send file if uploaded, otherwise send URL
     if (formData.videoFile) {
       formDataToSend.append("video", formData.videoFile)
-    } else if (formData.video && typeof formData.video === "string") {
+    } else if (formData.video) {
       formDataToSend.append("videoUrl", formData.video)
+      formDataToSend.append("video", formData.video)
     }
 
     return formDataToSend
@@ -313,13 +265,12 @@ export default function SliderAdminPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // Validation
+
     if (!formData.image && !formData.imageFile) {
-      toast.error("Please upload an image or provide an image URL")
+      toast.error("Please paste an Image URL or upload an image file")
       return
     }
-    
+
     const formDataToSend = prepareFormData()
 
     if (isEditDialogOpen && selectedSlide) {
@@ -329,352 +280,528 @@ export default function SliderAdminPage() {
     }
   }
 
-  const handleDeleteConfirm = () => {
-    if (selectedSlide?._id) {
-      deleteMutation.mutate(selectedSlide._id)
+  const nextPreview = () => {
+    if (activeSliders.length > 0) {
+      setPreviewIndex((prev) => (prev + 1) % activeSliders.length)
     }
   }
 
-  const nextPreview = () => {
-    setPreviewIndex((prev) => (prev + 1) % activeSliders.length)
-  }
-
   const prevPreview = () => {
-    setPreviewIndex((prev) => (prev - 1 + activeSliders.length) % activeSliders.length)
+    if (activeSliders.length > 0) {
+      setPreviewIndex((prev) => (prev - 1 + activeSliders.length) % activeSliders.length)
+    }
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto p-4 sm:p-6 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" onClick={() => router.push("/admin")}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/admin")} className="gap-1.5">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div className="h-4 w-[1px] bg-slate-300 dark:bg-slate-700 hidden sm:block" />
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Hero Slider Management</h1>
+        </div>
+
+        <Button onClick={handleAddClick} className="gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+          <Plus className="h-4 w-4" />
+          Add New Slide
         </Button>
-        <h1 className="text-3xl font-bold">Slider Management</h1>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Left: List */}
-        <div className="h-[calc(100vh-200px)] flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">All Slides ({sliders.length})</h2>
-            <Button onClick={handleAddClick} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Slide
-            </Button>
+      {/* Main Grid: Left List, Right Live Preview */}
+      <div className="grid lg:grid-cols-12 gap-6">
+        {/* Left Column: All Slides List (7 cols) */}
+        <div className="lg:col-span-7 flex flex-col space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>Configured Slides</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                {sliders.length}
+              </span>
+            </h2>
+            <span className="text-xs text-muted-foreground">Active on homepage: {activeSliders.length}</span>
           </div>
 
           {isLoading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-muted-foreground">Loading...</p>
+            <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">Loading slides...</p>
             </div>
           ) : sliders.length === 0 ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground mb-4">No slides configured yet</p>
-                <Button onClick={handleAddClick}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Slide
+            <Card className="rounded-2xl border-dashed border-2">
+              <CardContent className="p-10 text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-slate-800 flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
+                  <Plus className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base">No slider banners yet</h3>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                    Homepage currently displays the branded Sarkari Spark watermark. Add your first banner using an ImgBB link or image file.
+                  </p>
+                </div>
+                <Button onClick={handleAddClick} size="sm" className="gap-1.5 mt-2">
+                  <Plus className="h-4 w-4" />
+                  Add Your First Banner
                 </Button>
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4 overflow-y-auto pr-2">
-              {sliders.map((slide: SliderForm, index: number) => (
-                <Card key={slide._id} className={!slide.isActive ? "opacity-60" : ""}>
-                  <CardContent className="p-4">
-                    <div className="flex gap-4">
-                      {/* Thumbnail */}
-                      <div className="w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-                        {slide.image ? (
-                          <img
-                            src={getApiImageUrl(slide.image)}
-                            alt={slide.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                            No Image
-                          </div>
-                        )}
-                      </div>
+            <div className="space-y-3">
+              {sliders.map((slide: SliderForm) => {
+                const imageUrl = slide.image ? getApiImageUrl(slide.image) : ""
+                const videoUrl = slide.video ? getApiImageUrl(slide.video) : ""
 
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold truncate">{slide.title || "Untitled"}</h3>
-                            <p className="text-sm text-muted-foreground truncate">{slide.subtitle}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-xs text-muted-foreground">Order: {slide.order}</span>
-                              {!slide.isActive && (
-                                <span className="text-xs text-red-500">(Inactive)</span>
+                return (
+                  <Card
+                    key={slide._id}
+                    className={`rounded-xl border transition-all overflow-hidden ${
+                      !slide.isActive ? "opacity-60 bg-slate-50 dark:bg-slate-900/40" : "hover:border-indigo-300 dark:hover:border-indigo-800 shadow-sm"
+                    }`}
+                  >
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        {/* Thumbnail View */}
+                        <div className="w-24 sm:w-32 h-16 sm:h-20 rounded-lg overflow-hidden bg-slate-950 flex-shrink-0 relative border border-slate-200 dark:border-slate-800">
+                          {videoUrl ? (
+                            <video src={videoUrl} muted className="w-full h-full object-cover" />
+                          ) : imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={slide.title || "Slide banner"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/placeholder-banner.png"
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400">
+                              No Media
+                            </div>
+                          )}
+                          {videoUrl && (
+                            <span className="absolute bottom-1 right-1 px-1 py-0.5 bg-black/70 text-[9px] text-white rounded font-medium flex items-center gap-0.5">
+                              <Video className="h-2.5 w-2.5" /> Video
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Slide Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">
+                                {slide.title || "Banner (No Title Text)"}
+                              </h3>
+                              {slide.subtitle && (
+                                <p className="text-xs text-muted-foreground truncate mt-0.5">
+                                  {slide.subtitle}
+                                </p>
                               )}
                             </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-slate-600 hover:text-indigo-600 dark:text-slate-400"
+                                onClick={() => handleEditClick(slide)}
+                                title="Edit slide"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                onClick={() => handleDeleteClick(slide)}
+                                title="Delete slide"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => handleEditClick(slide)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-red-500"
-                              onClick={() => handleDeleteClick(slide)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+
+                          {/* Metadata row */}
+                          <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px]">
+                            <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+                              Order: #{slide.order || 0}
+                            </span>
+
+                            {slide.isActive ? (
+                              <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 font-medium">
+                                Active
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 font-medium">
+                                Hidden
+                              </span>
+                            )}
+
+                            {slide.redirectUrl && (
+                              <span className="inline-flex items-center gap-1 text-muted-foreground truncate max-w-[150px]">
+                                <ExternalLink className="h-3 w-3" />
+                                {slide.redirectUrl}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           )}
         </div>
 
-        {/* Right: Preview */}
-        <div className="h-[calc(100vh-200px)] overflow-y-auto">
-          <h2 className="text-xl font-semibold mb-6">Live Preview</h2>
-          <Card className="overflow-hidden w-full">
+        {/* Right Column: Live Homepage Preview (5 cols) */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Live Homepage Preview</h2>
+            <span className="text-xs text-muted-foreground">Interactive</span>
+          </div>
+
+          <Card className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-950 p-2 sm:p-3 shadow-xl">
             {activeSliders.length > 0 ? (
-              <div className="relative">
-                {/* Slide Image */}
-                <div className="relative h-[400px] bg-muted">
-                  <img
-                    src={getApiImageUrl(activeSliders[previewIndex]?.image)}
-                    alt={activeSliders[previewIndex]?.title}
+              <div className="relative rounded-xl overflow-hidden aspect-[16/9] bg-slate-900 flex items-center justify-center">
+                {/* Active Slide Media */}
+                {activeSliders[previewIndex]?.video ? (
+                  <video
+                    src={getApiImageUrl(activeSliders[previewIndex].video)}
+                    autoPlay
+                    muted
+                    loop
                     className="w-full h-full object-cover"
                   />
-                  
-                  {/* Overlay Text */}
-                  {(activeSliders[previewIndex]?.title || activeSliders[previewIndex]?.subtitle) && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                      {activeSliders[previewIndex]?.title && (
-                        <h3 className="text-white font-semibold text-lg">
-                          {activeSliders[previewIndex].title}
-                        </h3>
-                      )}
-                      {activeSliders[previewIndex]?.subtitle && (
-                        <p className="text-white/80 text-sm">
-                          {activeSliders[previewIndex].subtitle}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
+                ) : (
+                  <img
+                    src={getApiImageUrl(activeSliders[previewIndex]?.image)}
+                    alt={activeSliders[previewIndex]?.title || "Slider Preview"}
+                    className="w-full h-full object-cover"
+                  />
+                )}
 
-                {/* Navigation */}
-                <div className="flex items-center justify-between p-4 bg-card border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={prevPreview}
-                    disabled={activeSliders.length <= 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {previewIndex + 1} / {activeSliders.length}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={nextPreview}
-                    disabled={activeSliders.length <= 1}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Dots */}
-                {activeSliders.length > 1 && (
-                  <div className="flex justify-center gap-2 pb-4">
-                    {activeSliders.map((_: any, i: number) => (
-                      <button
-                        key={i}
-                        onClick={() => setPreviewIndex(i)}
-                        className={`w-2 h-2 rounded-full transition-colors ${
-                          i === previewIndex ? "bg-primary" : "bg-muted-foreground/30"
-                        }`}
-                      />
-                    ))}
+                {/* Overlay Text if Present */}
+                {(activeSliders[previewIndex]?.title || activeSliders[previewIndex]?.subtitle) && (
+                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                    {activeSliders[previewIndex]?.title && (
+                      <h4 className="text-white text-xs sm:text-sm font-bold line-clamp-1">
+                        {activeSliders[previewIndex].title}
+                      </h4>
+                    )}
+                    {activeSliders[previewIndex]?.subtitle && (
+                      <p className="text-white/80 text-[10px] sm:text-xs line-clamp-1 mt-0.5">
+                        {activeSliders[previewIndex].subtitle}
+                      </p>
+                    )}
                   </div>
+                )}
+
+                {/* Controls */}
+                {activeSliders.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevPreview}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-sm"
+                      aria-label="Previous"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={nextPreview}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-sm"
+                      aria-label="Next"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+
+                    <div className="absolute bottom-2 right-2 flex gap-1">
+                      {activeSliders.map((_: any, idx: number) => (
+                        <button
+                          key={idx}
+                          onClick={() => setPreviewIndex(idx)}
+                          className={`h-1.5 rounded-full transition-all ${
+                            idx === previewIndex ? "w-4 bg-amber-400" : "w-1.5 bg-white/40"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             ) : (
-              <div className="h-64 flex items-center justify-center bg-muted">
-                <p className="text-muted-foreground">No active slides to preview</p>
+              /* Watermark State Preview */
+              <div className="relative rounded-xl overflow-hidden aspect-[16/9] bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col items-center justify-center text-center p-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500/20 to-amber-500/20 border border-white/10 flex items-center justify-center mb-2">
+                  <GraduationCap className="h-6 w-6 text-indigo-400" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base font-black tracking-wider text-white/80">SARKARI</span>
+                  <span className="text-base font-black tracking-wider text-amber-400">SPARK</span>
+                </div>
+                <p className="text-[10px] tracking-widest text-slate-400 uppercase mt-0.5">Govt Exam Mock Test Portal</p>
+                <span className="mt-3 text-[11px] text-amber-400/80 font-medium">No active slides (Watermark Active)</span>
               </div>
             )}
+
+            <div className="p-3 text-center border-t border-slate-800 mt-2">
+              <p className="text-xs text-slate-400">
+                This reflects the live banner box on <span className="text-indigo-400">sarkarispark.com</span>
+              </p>
+            </div>
           </Card>
         </div>
       </div>
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={isAddDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsAddDialogOpen(false)
-          setIsEditDialogOpen(false)
-          resetForm()
-        }
-      }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      {/* Add / Edit Slide Dialog */}
+      <Dialog
+        open={isAddDialogOpen || isEditDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsAddDialogOpen(false)
+            setIsEditDialogOpen(false)
+            resetForm()
+          }
+        }}
+      >
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {isEditDialogOpen ? "Edit Slide" : "Add Slide"}
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-indigo-500" />
+              {isEditDialogOpen ? "Edit Slide Banner" : "Add Slide Banner"}
             </DialogTitle>
             <DialogDescription>
-              {isEditDialogOpen ? "Update the slide details below" : "Add a new slide to the homepage slider"}
+              Add an image or video banner to the homepage hero slider. Supports direct links (ImgBB, Cloudinary, etc.) and file uploads.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label>Image *</Label>
-              {(imagePreview || formData.image) && (
-                <div className="relative mb-3 max-h-32 overflow-hidden rounded-lg">
-                  <img
-                    src={imagePreview || formData.image}
-                    alt="Preview"
-                    className="w-full h-32 object-cover"
-                  />
-                  <Button
+
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            {/* 1. Image Media Section */}
+            <div className="space-y-2.5 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between">
+                <Label className="font-bold text-sm flex items-center gap-1.5">
+                  <span>Banner Image</span>
+                  <span className="text-red-500">*</span>
+                </Label>
+
+                {/* Mode Selector Toggle */}
+                <div className="inline-flex rounded-lg p-0.5 bg-slate-200 dark:bg-slate-800 text-xs">
+                  <button
                     type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
+                    onClick={() => setImageMode("url")}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                      imageMode === "url"
+                        ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                    }`}
+                  >
+                    <LinkIcon className="h-3 w-3 inline mr-1" />
+                    Image URL
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageMode("upload")}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                      imageMode === "upload"
+                        ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                    }`}
+                  >
+                    <Upload className="h-3 w-3 inline mr-1" />
+                    Upload File
+                  </button>
+                </div>
+              </div>
+
+              {/* Mode 1: URL Input (Recommended for ImgBB) */}
+              {imageMode === "url" ? (
+                <div className="space-y-1.5">
+                  <Input
+                    value={formData.image}
+                    onChange={(e) => handleImageUrlChange(e.target.value)}
+                    placeholder="e.g. https://i.ibb.co/xyz123/banner.jpg"
+                    className="font-mono text-xs sm:text-sm bg-white dark:bg-slate-950"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Paste direct link from <span className="font-semibold text-indigo-600 dark:text-indigo-400">ImgBB</span>, Cloudinary, or any image URL. Permanent and loads instantly.
+                  </p>
+                </div>
+              ) : (
+                /* Mode 2: File Upload */
+                <div className="space-y-1.5">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileChange}
+                    className="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-slate-200 cursor-pointer"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Upload PNG, JPG, or WebP image from your device.
+                  </p>
+                </div>
+              )}
+
+              {/* Image Live Preview */}
+              {imagePreview && (
+                <div className="relative mt-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-950 aspect-[16/8] max-h-40">
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
                     onClick={handleRemoveImage}
+                    className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow"
+                    title="Remove image"
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               )}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsImagePickerOpen(true)}
-                className="w-full gap-2"
-              >
-                <ImageIcon className="h-4 w-4" />
-                {formData.image ? "Change Image from Library" : "Select from Media Library"}
-              </Button>
             </div>
 
-            {/* Title */}
-            <div className="space-y-2">
-              <Label>Title (Optional)</Label>
-              <Input
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="e.g., SSC CGL 2024"
-              />
-            </div>
+            {/* 2. Optional Video Section */}
+            <div className="space-y-2 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Video className="h-3.5 w-3.5 text-indigo-500" />
+                  Video Banner (Optional)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowVideoOptions(!showVideoOptions)}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+                >
+                  {showVideoOptions ? "Hide Video Options" : "+ Add Video"}
+                </button>
+              </div>
 
-            {/* Subtitle */}
-            <div className="space-y-2">
-              <Label>Subtitle (Optional)</Label>
-              <Input
-                value={formData.subtitle}
-                onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                placeholder="e.g., Apply before 31st Dec"
-              />
-            </div>
+              {showVideoOptions && (
+                <div className="pt-2 space-y-2.5 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-muted-foreground">Video Source</Label>
+                    <div className="inline-flex rounded-lg p-0.5 bg-slate-200 dark:bg-slate-800 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setVideoMode("url")}
+                        className={`px-2 py-0.5 rounded font-medium ${
+                          videoMode === "url" ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-white" : "text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        Video URL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setVideoMode("upload")}
+                        className={`px-2 py-0.5 rounded font-medium ${
+                          videoMode === "upload" ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-white" : "text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        Upload Video
+                      </button>
+                    </div>
+                  </div>
 
-            {/* Video Upload */}
-            <div className="space-y-2">
-              <Label>Video (Optional)</Label>
-              {(videoPreview || formData.video) && (
-                <div className="relative mb-3 max-h-32 overflow-hidden rounded-lg">
-                  <video
-                    src={videoPreview || formData.video}
-                    controls
-                    className="w-full h-32 object-cover"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={handleRemoveVideo}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  {videoMode === "url" ? (
+                    <Input
+                      value={formData.video}
+                      onChange={(e) => handleVideoUrlChange(e.target.value)}
+                      placeholder="e.g. https://example.com/banner-promo.mp4"
+                      className="font-mono text-xs bg-white dark:bg-slate-950"
+                    />
+                  ) : (
+                    <input
+                      ref={videoInputRef}
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoFileChange}
+                      className="block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:bg-slate-200 file:text-slate-800 cursor-pointer"
+                    />
+                  )}
+
+                  {videoPreview && (
+                    <div className="relative mt-2 rounded-lg overflow-hidden border bg-black aspect-[16/8] max-h-36">
+                      <video src={videoPreview} controls className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={handleRemoveVideo}
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center shadow"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoFileChange}
-                className="w-full"
-              />
-              <p className="text-xs text-muted-foreground">
-                If provided, the video will play for a short time instead of the image
-              </p>
             </div>
 
-            {/* Video Duration */}
-            <div className="space-y-2">
-              <Label>Video Duration (Optional)</Label>
-              <Input
-                type="number"
-                value={formData.videoDuration}
-                onChange={(e) => setFormData({ ...formData, videoDuration: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                min="0"
-              />
-              <p className="text-xs text-muted-foreground">
-                Video play duration in seconds (0 = play full video)
-              </p>
-            </div>
-
-            {/* Redirect URL */}
-            <div className="space-y-2">
-              <Label>Redirect URL (Optional)</Label>
+            {/* 3. Redirect / Target URL */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Redirect Link (Optional)</Label>
               <Input
                 value={formData.redirectUrl}
                 onChange={(e) => setFormData({ ...formData, redirectUrl: e.target.value })}
-                placeholder="e.g., /exams/ssc-cgl or https://external-link.com"
-                type="url"
+                placeholder="e.g. /exams or /pricing or https://..."
+                className="text-xs sm:text-sm"
               />
-              <p className="text-xs text-muted-foreground">
-                Clicking the slide will navigate to this URL
+              <p className="text-[11px] text-muted-foreground">
+                Clicking the slide navigates here. You can use internal paths like <code className="text-indigo-500">/exams</code> or full web links.
               </p>
             </div>
 
-            {/* Order */}
-            <div className="space-y-2">
-              <Label>Display Order</Label>
-              <Input
-                type="number"
-                value={formData.order}
-                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-              />
-              <p className="text-xs text-muted-foreground">
-                Lower numbers appear first
-              </p>
+            {/* 4. Text Overlays (Optional) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Title (Optional)</Label>
+                <Input
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g. UP Police Constable 2026"
+                  className="text-xs sm:text-sm"
+                />
+                <p className="text-[10px] text-muted-foreground">Leave empty if banner already contains text.</p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Subtitle (Optional)</Label>
+                <Input
+                  value={formData.subtitle}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                  placeholder="e.g. 25 Full Mock Tests Live"
+                  className="text-xs sm:text-sm"
+                />
+                <p className="text-[10px] text-muted-foreground">Short description below title.</p>
+              </div>
             </div>
 
-            {/* Active Toggle */}
-            <div className="flex items-center justify-between">
-              <Label>Active</Label>
-              <Switch
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-              />
+            {/* 5. Order and Active Toggle */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <Label className="text-xs font-semibold">Display Order:</Label>
+                <Input
+                  type="number"
+                  value={formData.order}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                  className="w-20 h-8 text-xs font-bold"
+                  min="0"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Label className="text-xs font-semibold cursor-pointer" htmlFor="active-toggle">
+                  {formData.isActive ? "Status: Active (Visible)" : "Status: Hidden"}
+                </Label>
+                <Switch
+                  id="active-toggle"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                />
+              </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="pt-3 gap-2 sm:gap-0">
               <Button
                 type="button"
                 variant="outline"
@@ -689,12 +816,13 @@ export default function SliderAdminPage() {
               <Button
                 type="submit"
                 disabled={createMutation.isLoading || updateMutation.isLoading}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 {createMutation.isLoading || updateMutation.isLoading
-                  ? "Saving..."
+                  ? "Saving Slide..."
                   : isEditDialogOpen
-                  ? "Update"
-                  : "Create"}
+                  ? "Save Changes"
+                  : "Create Slide"}
               </Button>
             </DialogFooter>
           </form>
@@ -703,15 +831,14 @@ export default function SliderAdminPage() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Delete Slide</DialogTitle>
-            <DialogDescription>This action cannot be undone</DialogDescription>
+            <DialogTitle>Delete Slide Banner</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this slide banner from the homepage? This cannot be undone.
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-muted-foreground">
-            Are you sure you want to delete this slide? This action cannot be undone.
-          </p>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
               Cancel
             </Button>
@@ -720,18 +847,11 @@ export default function SliderAdminPage() {
               onClick={handleDeleteConfirm}
               disabled={deleteMutation.isLoading}
             >
-              {deleteMutation.isLoading ? "Deleting..." : "Delete"}
+              {deleteMutation.isLoading ? "Deleting..." : "Yes, Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Image Picker Dialog */}
-      <ImagePicker
-        isOpen={isImagePickerOpen}
-        onClose={() => setIsImagePickerOpen(false)}
-        onSelect={handleImageSelect}
-      />
     </div>
   )
 }

@@ -1305,6 +1305,8 @@ function HeroSlider({ sliders, isLoading }: { sliders: any[]; isLoading?: boolea
                         src={videoUrl}
                         autoPlay
                         muted
+                        playsInline
+                        loop
                         onEnded={nextSlide}
                         className="relative z-10 w-full h-full object-cover"
                       />
