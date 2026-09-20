@@ -31,3 +31,26 @@ export function formatCurrency(amount: number) {
     minimumFractionDigits: 0,
   }).format(amount)
 }
+
+export function getSiteUrl(): string {
+  let url =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://sarkarispark.vercel.app")
+
+  url = url.trim()
+
+  // Fix mistakenly configured .vercel without .app
+  if (url.includes("sarkarispark.vercel") && !url.includes("sarkarispark.vercel.app")) {
+    url = url.replace("sarkarispark.vercel", "sarkarispark.vercel.app")
+  }
+
+  if (url.endsWith(".vercel")) {
+    url = url + ".app"
+  }
+
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = `https://${url}`
+  }
+
+  return url.replace(/\/+$/, "")
+}

@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next"
+import { getSiteUrl } from "@/lib/utils"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sarkarispark.com"
+  const baseUrl = getSiteUrl()
   const currentDate = new Date()
 
   // Static routes with their priority and changeFrequency

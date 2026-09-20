@@ -2,10 +2,11 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Providers } from "./providers"
+import { getSiteUrl } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"] })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sarkarispark.com"
+const siteUrl = getSiteUrl()
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Sarkari Spark Team", url: siteUrl }],
   creator: "Sarkari Spark",
   publisher: "Sarkari Spark",
-  robots: {
+    robots: {
     index: true,
     follow: true,
     googleBot: {
@@ -44,6 +45,9 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   },
   openGraph: {
     type: "website",
