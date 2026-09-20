@@ -360,16 +360,18 @@ export default function Navbar() {
                   )
                 })}
 
-                {/* Pro Pass Highlight in Drawer */}
-                <Link
-                  href="/payment"
-                  className="flex items-center space-x-3 py-2.5 px-3.5 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-indigo-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 shadow-xs"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Crown className="h-4 w-4 text-amber-500 shrink-0" />
-                  <span className="flex-1">Get Pro Pass</span>
-                  <span className="text-[10px] uppercase font-black px-1.5 py-0.5 bg-amber-500 text-slate-950 rounded-md">Save 50%</span>
-                </Link>
+                {/* Pro Pass Highlight in Drawer - Only for Logged In Users */}
+                {user && (
+                  <Link
+                    href="/payment"
+                    className="flex items-center space-x-3 py-2.5 px-3.5 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-indigo-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 shadow-xs"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Crown className="h-4 w-4 text-amber-500 shrink-0" />
+                    <span className="flex-1">Get Pro Pass</span>
+                    <span className="text-[10px] uppercase font-black px-1.5 py-0.5 bg-amber-500 text-slate-950 rounded-md">Save 50%</span>
+                  </Link>
+                )}
 
                 {/* Admin Link if authorized */}
                 {user && (user.role === "admin" || user.role === "superadmin") && (
@@ -439,18 +441,32 @@ export default function Navbar() {
                 <span className="text-[10px] leading-tight font-medium">Exams</span>
               </Link>
 
-              {/* 3. Pro Pass (Center Cylindrical Highlight) */}
-              <Link
-                href="/payment"
-                className="flex flex-col items-center justify-center py-0.5 -mt-3.5 group"
-              >
-                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/35 border-2 border-background group-hover:scale-105 transition-transform">
-                  <Crown className="h-5 w-5 fill-slate-950" />
-                </div>
-                <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 mt-0.5 uppercase tracking-wide">
-                  Pro
-                </span>
-              </Link>
+              {/* 3. Center Highlight: Pro Pass if logged in, Admit Cards if logged out */}
+              {user ? (
+                <Link
+                  href="/payment"
+                  className="flex flex-col items-center justify-center py-0.5 -mt-3.5 group"
+                >
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/35 border-2 border-background group-hover:scale-105 transition-transform">
+                    <Crown className="h-5 w-5 fill-slate-950" />
+                  </div>
+                  <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 mt-0.5 uppercase tracking-wide">
+                    Pro
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  href="/admitcards"
+                  className="flex flex-col items-center justify-center py-0.5 -mt-3.5 group"
+                >
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/35 border-2 border-background group-hover:scale-105 transition-transform">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 mt-0.5 uppercase tracking-wide">
+                    Admit Card
+                  </span>
+                </Link>
+              )}
 
               {/* 4. Jobs */}
               <Link

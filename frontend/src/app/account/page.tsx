@@ -170,27 +170,46 @@ export default function AccountPage() {
 
           {/* Quick 2x2 Feature Cards */}
           <div className="grid grid-cols-2 gap-3 mb-6">
-            <Link
-              href="/payment"
-              className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 hover:border-amber-500/50 transition-all flex flex-col justify-between group"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
-                  <Crown className="w-5 h-5" />
+            {user ? (
+              <Link
+                href="/payment"
+                className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 hover:border-amber-500/50 transition-all flex flex-col justify-between group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
+                    <Crown className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500 text-slate-950">
+                    Save 50%
+                  </span>
                 </div>
-                <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500 text-slate-950">
-                  Save 50%
-                </span>
-              </div>
-              <div>
-                <p className="font-extrabold text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition-colors">
-                  Pro Pass
-                </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  650+ Mock Tests Unlocked
-                </p>
-              </div>
-            </Link>
+                <div>
+                  <p className="font-extrabold text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition-colors">
+                    Pro Pass
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    650+ Mock Tests Unlocked
+                  </p>
+                </div>
+              </Link>
+            ) : (
+              <Link
+                href="/results"
+                className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/20 hover:border-emerald-500/40 transition-all flex flex-col justify-between group"
+              >
+                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform mb-2">
+                  <Award className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-extrabold text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 transition-colors">
+                    Exam Results
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Latest Cutoffs & Merit Lists
+                  </p>
+                </div>
+              </Link>
+            )}
 
             <Link
               href="/exams"
