@@ -145,7 +145,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="py-6"
+                  className="h-12 px-3.5 rounded-xl border-slate-200 dark:border-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
@@ -161,14 +161,15 @@ export default function LoginPage() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
-                    className="py-6"
+                    className="h-12 px-3.5 pr-12 rounded-xl border-slate-200 dark:border-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-slate-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 transition-colors cursor-pointer focus:outline-none"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>

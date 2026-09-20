@@ -388,13 +388,19 @@ html {
 @media (max-width: 768px) {
 
   /* Touch-friendly tap targets */
-  button,
-  a,
-  input,
+  .btn,
+  input:not([type="checkbox"]):not([type="radio"]),
   select,
   textarea {
     min-height: 44px;
-    min-width: 44px;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 1.125rem !important;
+    min-width: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
   }
 
   /* Better spacing on mobile */
@@ -417,12 +423,6 @@ html {
   h3 {
     font-size: 1.25rem;
     line-height: 1.75rem;
-  }
-
-  p,
-  span,
-  div {
-    font-size: 0.95rem;
   }
 
   /* Mobile card adjustments */

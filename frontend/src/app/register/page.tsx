@@ -73,7 +73,7 @@ export default function RegisterPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <label htmlFor="name" className="text-xs sm:text-sm font-medium">
+                <label htmlFor="name" className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Full Name
                 </label>
                 <Input
@@ -83,12 +83,12 @@ export default function RegisterPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="py-6"
+                  className="h-12 px-3.5 rounded-xl border-slate-200 dark:border-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-xs sm:text-sm font-medium">
+                <label htmlFor="email" className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Email
                 </label>
                 <Input
@@ -98,64 +98,81 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="py-6"
+                  className="h-12 px-3.5 rounded-xl border-slate-200 dark:border-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="phone" className="text-xs sm:text-sm font-medium">
+                <label htmlFor="phone" className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                   Phone Number
                 </label>
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="Enter your phone number"
+                  placeholder="Enter phone number"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="py-6"
+                  className="h-12 px-3.5 rounded-xl border-slate-200 dark:border-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-xs sm:text-sm font-medium">
-                  Password
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Password
+                  </label>
+                  <span className="text-xs text-muted-foreground font-normal">Min 6 characters</span>
+                </div>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a password (min 6 characters)"
+                    placeholder="Create password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
                     minLength={6}
-                    className="py-6"
+                    className="h-12 px-3.5 pr-12 rounded-xl border-slate-200 dark:border-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-slate-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 transition-colors cursor-pointer focus:outline-none"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-2">
-                <input type="checkbox" id="terms" className="mt-1 rounded border-gray-300" required />
-                <label htmlFor="terms" className="text-xs sm:text-sm text-muted-foreground">
+              <div className="flex items-start space-x-2.5 pt-1">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 mt-0.5 shrink-0 cursor-pointer accent-indigo-600"
+                  required
+                />
+                <label htmlFor="terms" className="text-xs sm:text-sm text-muted-foreground leading-snug cursor-pointer select-none">
                   I agree to the{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
+                  <Link href="/terms" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy-policy" className="text-primary hover:underline">
+                  <Link href="/privacy-policy" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
                     Privacy Policy
                   </Link>
                 </label>
               </div>
 
-              <Button type="submit" className="w-full py-6" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-sm shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
