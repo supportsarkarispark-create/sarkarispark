@@ -1128,7 +1128,6 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       subtitle: "60,000+ Vacancies • 25 Full Length Mock Tests with All India Rank",
       image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop",
       redirectUrl: "/exams",
-      badge: "🔥 Super Popular"
     },
     {
       _id: "default-2",
@@ -1136,7 +1135,6 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       subtitle: "Exact TCS Exam Pattern • Real Timer & Negative Marking Simulation",
       image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200&auto=format&fit=crop",
       redirectUrl: "/exams",
-      badge: "⚡ Free Test Available"
     },
     {
       _id: "default-3",
@@ -1144,7 +1142,6 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       subtitle: "Previous 10 Years Solved Papers (PYQs) • 100% Bilingual in Hindi & English",
       image: "https://images.unsplash.com/photo-1513258496099-48168024aec0?q=80&w=1200&auto=format&fit=crop",
       redirectUrl: "/exams",
-      badge: "⭐ Topper Choice"
     }
   ]
 
@@ -1283,61 +1280,36 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
                     className="w-full h-full object-cover transform transition-transform duration-1000 ease-out group-hover:scale-105"
                   />
                 )}
-
-                {/* Cinematic Multi-Stop Gradient Scrim for crystal clear readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-transparent pointer-events-none" />
               </div>
             )
           })}
 
-          {/* Top Overlays: Badge & Slide Counter */}
-          <div className="absolute top-2.5 left-2.5 right-2.5 sm:top-3.5 sm:left-3.5 sm:right-3.5 flex items-center justify-between z-20 pointer-events-none">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-amber-300 shadow-md">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
-              {currentSlide?.badge || "🔥 Trending Mock Test"}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-white/90 shadow-md">
-              <span className="text-amber-400 font-bold">{String(currentIndex + 1).padStart(2, "0")}</span>
-              <span className="text-white/40 font-light">/</span>
-              <span className="text-white/80">{String(displaySliders.length).padStart(2, "0")}</span>
-            </span>
-          </div>
+          {/* Top Slide Counter */}
+          {displaySliders.length > 1 && (
+            <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 flex items-center justify-end z-20 pointer-events-none">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/60 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-white/90 shadow-md">
+                <span className="text-amber-400 font-bold">{String(currentIndex + 1).padStart(2, "0")}</span>
+                <span className="text-white/40 font-light">/</span>
+                <span className="text-white/80">{String(displaySliders.length).padStart(2, "0")}</span>
+              </span>
+            </div>
+          )}
 
-          {/* Bottom Content Area */}
-          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 space-y-1 sm:space-y-1.5 z-20 pointer-events-none">
-            {currentSlide?.title && (
-              <h3 className="text-white text-sm sm:text-lg lg:text-2xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 pr-16 sm:pr-0">
-                {currentSlide.title}
-              </h3>
-            )}
-            {currentSlide?.subtitle && (
-              <p className="text-slate-200/90 text-[11px] sm:text-xs lg:text-sm font-normal line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-xl drop-shadow">
-                {currentSlide.subtitle}
-              </p>
-            )}
-
-            {/* Smart Interactive CTA Pill */}
-            <div className="pt-1 sm:pt-2 flex items-center gap-2 sm:gap-3 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => handleSlideClick(currentSlide?.redirectUrl)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-[11px] sm:text-xs lg:text-sm shadow-md shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer"
-              >
-                <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-slate-950 shrink-0" />
-                <span>Attempt Mock Test</span>
-                <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
-              </button>
-              {currentSlide?.redirectUrl && (
-                <span
-                  onClick={() => handleSlideClick(currentSlide?.redirectUrl)}
-                  className="hidden sm:inline-flex text-[11px] font-medium text-white/80 hover:text-white transition-colors underline decoration-white/30 underline-offset-4 cursor-pointer"
-                >
-                  View details
-                </span>
+          {/* Bottom Content Area (Title/Subtitle with text shadow if present) */}
+          {(currentSlide?.title || currentSlide?.subtitle) && (
+            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 space-y-1 sm:space-y-1.5 z-20 pointer-events-none">
+              {currentSlide?.title && (
+                <h3 className="text-white text-sm sm:text-lg lg:text-2xl font-black tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] line-clamp-1 pr-16 sm:pr-0">
+                  {currentSlide.title}
+                </h3>
+              )}
+              {currentSlide?.subtitle && (
+                <p className="text-white/95 text-[11px] sm:text-xs lg:text-sm font-medium line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-xl drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                  {currentSlide.subtitle}
+                </p>
               )}
             </div>
-          </div>
+          )}
 
           {/* Left / Right Nav Controls - Desktop Floating Frosted Glass Buttons */}
           {displaySliders.length > 1 && (
