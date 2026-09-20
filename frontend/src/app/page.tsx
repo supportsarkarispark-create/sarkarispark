@@ -1169,37 +1169,6 @@ function HeroSlider({ sliders, isLoading }: { sliders: any[]; isLoading?: boolea
     ? sliders.filter((s) => s.isActive).sort((a, b) => (a.order || 0) - (b.order || 0))
     : []
 
-  // When loading sliders from API: show Sarkari Spark animated watermark
-  if (isLoading) {
-    return (
-      <div className="relative w-full max-w-xl mx-auto lg:max-w-none group select-none">
-        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/25 rounded-[22px] sm:rounded-[26px] blur-lg -z-10 opacity-60" />
-        <div className="relative p-1 sm:p-1.5 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-white/90 via-white/50 to-white/20 dark:from-slate-700/60 dark:via-slate-800/40 dark:to-slate-900/60 shadow-xl shadow-indigo-950/10 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md">
-          <div className="relative w-full h-[230px] sm:h-[280px] md:h-[330px] lg:h-[360px] xl:h-[390px] 2xl:h-[410px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
-            <SarkariSparkWatermark isAnimated={true} />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // When not loading and no active slides exist in database: show clean static Sarkari Spark watermark
-  if (activeSliders.length === 0) {
-    return (
-      <div
-        className="relative w-full max-w-xl mx-auto lg:max-w-none group select-none cursor-pointer"
-        onClick={() => router.push("/exams")}
-      >
-        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/25 rounded-[22px] sm:rounded-[26px] blur-lg -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="relative p-1 sm:p-1.5 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-white/90 via-white/50 to-white/20 dark:from-slate-700/60 dark:via-slate-800/40 dark:to-slate-900/60 shadow-xl shadow-indigo-950/10 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md">
-          <div className="relative w-full h-[230px] sm:h-[280px] md:h-[330px] lg:h-[360px] xl:h-[390px] 2xl:h-[410px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
-            <SarkariSparkWatermark isAnimated={false} />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const displaySliders = activeSliders
 
   useEffect(() => {
@@ -1224,10 +1193,12 @@ function HeroSlider({ sliders, isLoading }: { sliders: any[]; isLoading?: boolea
   }
 
   const nextSlide = () => {
+    if (displaySliders.length === 0) return
     goToSlide((currentIndex + 1) % displaySliders.length)
   }
 
   const prevSlide = () => {
+    if (displaySliders.length === 0) return
     goToSlide((currentIndex - 1 + displaySliders.length) % displaySliders.length)
   }
 
@@ -1251,6 +1222,10 @@ function HeroSlider({ sliders, isLoading }: { sliders: any[]; isLoading?: boolea
   }
 
   const handleSlideClick = (redirectUrl?: string) => {
+    if (displaySliders.length === 0) {
+      router.push("/exams")
+      return
+    }
     const slide = displaySliders[currentIndex]
     const destination = redirectUrl || slide?.redirectUrl
     if (destination) {
@@ -1280,147 +1255,157 @@ function HeroSlider({ sliders, isLoading }: { sliders: any[]; isLoading?: boolea
         {/* Slider Viewport with Controlled Proportional Height */}
         <div className="relative w-full h-[230px] sm:h-[280px] md:h-[330px] lg:h-[360px] xl:h-[390px] 2xl:h-[410px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
           
-          {/* Autoplay Progress Line */}
-          {displaySliders.length > 1 && (
-            <div className="absolute top-0 left-0 right-0 h-[3px] bg-white/10 z-30 overflow-hidden pointer-events-none">
-              <div
-                key={currentIndex}
-                className={`h-full bg-gradient-to-r from-amber-400 via-indigo-400 to-purple-400 ${
-                  isPaused ? "animate-none" : "animate-slider-progress"
-                }`}
-                style={{
-                  animationPlayState: isPaused ? "paused" : "running",
-                }}
-              />
+          {isLoading ? (
+            <SarkariSparkWatermark isAnimated={true} />
+          ) : displaySliders.length === 0 ? (
+            <div className="w-full h-full cursor-pointer" onClick={() => router.push("/exams")}>
+              <SarkariSparkWatermark isAnimated={false} />
             </div>
-          )}
-
-          {/* Slides with Smooth Cinematic Cross-Fade */}
-          {displaySliders.map((slide, index) => {
-            const isActive = index === currentIndex
-            const imageUrl = getImageUrl(slide?.image)
-            const videoUrl = slide?.video ? getImageUrl(slide.video) : null
-
-            return (
-              <div
-                key={slide._id || index}
-                className={`absolute inset-0 transition-all duration-700 ease-in-out cursor-pointer ${
-                  isActive
-                    ? "opacity-100 scale-100 pointer-events-auto z-10"
-                    : "opacity-0 scale-105 pointer-events-none z-0"
-                }`}
-                onClick={() => handleSlideClick(slide?.redirectUrl)}
-              >
-                {/* Underlying Sarkari Spark Watermark while slide image loads */}
-                <div className="absolute inset-0 z-0 pointer-events-none">
-                  <SarkariSparkWatermark isAnimated={false} />
-                </div>
-
-                {/* Media: Video or Image */}
-                {videoUrl ? (
-                  <video
-                    src={videoUrl}
-                    autoPlay
-                    muted
-                    onEnded={nextSlide}
-                    className="relative z-10 w-full h-full object-cover"
-                  />
-                ) : (
-                  <img
-                    src={imageUrl}
-                    alt={slide?.title || "Sarkari Spark Banner"}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none"
-                    }}
-                    className="relative z-10 w-full h-full object-cover transform transition-transform duration-1000 ease-out group-hover:scale-105"
-                  />
-                )}
-              </div>
-            )
-          })}
-
-          {/* Top Slide Counter */}
-          {displaySliders.length > 1 && (
-            <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 flex items-center justify-end z-20 pointer-events-none">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/60 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-white/90 shadow-md">
-                <span className="text-amber-400 font-bold">{String(currentIndex + 1).padStart(2, "0")}</span>
-                <span className="text-white/40 font-light">/</span>
-                <span className="text-white/80">{String(displaySliders.length).padStart(2, "0")}</span>
-              </span>
-            </div>
-          )}
-
-          {/* Bottom Content Area (Title/Subtitle with text shadow if present) */}
-          {(currentSlide?.title || currentSlide?.subtitle) && (
-            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 space-y-1 sm:space-y-1.5 z-20 pointer-events-none">
-              {currentSlide?.title && (
-                <h3 className="text-white text-sm sm:text-lg lg:text-2xl font-black tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] line-clamp-1 pr-16 sm:pr-0">
-                  {currentSlide.title}
-                </h3>
-              )}
-              {currentSlide?.subtitle && (
-                <p className="text-white/95 text-[11px] sm:text-xs lg:text-sm font-medium line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-xl drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-                  {currentSlide.subtitle}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Left / Right Nav Controls - Desktop Floating Frosted Glass Buttons */}
-          {displaySliders.length > 1 && (
+          ) : (
             <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  prevSlide()
-                }}
-                className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 backdrop-blur-md items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-30 cursor-pointer"
-                aria-label="Previous Slide"
-              >
-                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  nextSlide()
-                }}
-                className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 backdrop-blur-md items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-30 cursor-pointer"
-                aria-label="Next Slide"
-              >
-                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-            </>
-          )}
-
-          {/* Modern Segmented Pill Indicators */}
-          {displaySliders.length > 1 && (
-            <div className="absolute bottom-2.5 right-3 sm:bottom-3.5 sm:right-4 flex items-center gap-1.5 z-30 pointer-events-auto">
-              {displaySliders.map((_, index) => {
-                const isActive = index === currentIndex
-                return (
-                  <button
-                    type="button"
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      goToSlide(index)
+              {/* Autoplay Progress Line */}
+              {displaySliders.length > 1 && (
+                <div className="absolute top-0 left-0 right-0 h-[3px] bg-white/10 z-30 overflow-hidden pointer-events-none">
+                  <div
+                    key={currentIndex}
+                    className={`h-full bg-gradient-to-r from-amber-400 via-indigo-400 to-purple-400 ${
+                      isPaused ? "animate-none" : "animate-slider-progress"
+                    }`}
+                    style={{
+                      animationPlayState: isPaused ? "paused" : "running",
                     }}
-                    aria-label={`Go to slide ${index + 1}`}
-                    className="p-1 group focus:outline-none cursor-pointer"
+                  />
+                </div>
+              )}
+
+              {/* Slides with Smooth Cinematic Cross-Fade */}
+              {displaySliders.map((slide, index) => {
+                const isActive = index === currentIndex
+                const imageUrl = getImageUrl(slide?.image)
+                const videoUrl = slide?.video ? getImageUrl(slide.video) : null
+
+                return (
+                  <div
+                    key={slide._id || index}
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out cursor-pointer ${
+                      isActive
+                        ? "opacity-100 scale-100 pointer-events-auto z-10"
+                        : "opacity-0 scale-105 pointer-events-none z-0"
+                    }`}
+                    onClick={() => handleSlideClick(slide?.redirectUrl)}
                   >
-                    <span
-                      className={`block h-1.5 rounded-full transition-all duration-300 ease-out ${
-                        isActive
-                          ? "w-6 sm:w-7 bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm shadow-amber-400/60 ring-1 ring-amber-300/40"
-                          : "w-2 bg-white/40 group-hover:bg-white/70"
-                      }`}
-                    />
-                  </button>
+                    {/* Underlying Sarkari Spark Watermark while slide image loads */}
+                    <div className="absolute inset-0 z-0 pointer-events-none">
+                      <SarkariSparkWatermark isAnimated={false} />
+                    </div>
+
+                    {/* Media: Video or Image */}
+                    {videoUrl ? (
+                      <video
+                        src={videoUrl}
+                        autoPlay
+                        muted
+                        onEnded={nextSlide}
+                        className="relative z-10 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={imageUrl}
+                        alt={slide?.title || "Sarkari Spark Banner"}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none"
+                        }}
+                        className="relative z-10 w-full h-full object-cover transform transition-transform duration-1000 ease-out group-hover:scale-105"
+                      />
+                    )}
+                  </div>
                 )
               })}
-            </div>
+
+              {/* Top Slide Counter */}
+              {displaySliders.length > 1 && (
+                <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 flex items-center justify-end z-20 pointer-events-none">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/60 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-white/90 shadow-md">
+                    <span className="text-amber-400 font-bold">{String(currentIndex + 1).padStart(2, "0")}</span>
+                    <span className="text-white/40 font-light">/</span>
+                    <span className="text-white/80">{String(displaySliders.length).padStart(2, "0")}</span>
+                  </span>
+                </div>
+              )}
+
+              {/* Bottom Content Area (Title/Subtitle with text shadow if present) */}
+              {(currentSlide?.title || currentSlide?.subtitle) && (
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 space-y-1 sm:space-y-1.5 z-20 pointer-events-none">
+                  {currentSlide?.title && (
+                    <h3 className="text-white text-sm sm:text-lg lg:text-2xl font-black tracking-tight leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] line-clamp-1 pr-16 sm:pr-0">
+                      {currentSlide.title}
+                    </h3>
+                  )}
+                  {currentSlide?.subtitle && (
+                    <p className="text-white/95 text-[11px] sm:text-xs lg:text-sm font-medium line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-xl drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                      {currentSlide.subtitle}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Left / Right Nav Controls - Desktop Floating Frosted Glass Buttons */}
+              {displaySliders.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      prevSlide()
+                    }}
+                    className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 backdrop-blur-md items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-30 cursor-pointer"
+                    aria-label="Previous Slide"
+                  >
+                    <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      nextSlide()
+                    }}
+                    className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 backdrop-blur-md items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-30 cursor-pointer"
+                    aria-label="Next Slide"
+                  >
+                    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Modern Segmented Pill Indicators */}
+              {displaySliders.length > 1 && (
+                <div className="absolute bottom-2.5 right-3 sm:bottom-3.5 sm:right-4 flex items-center gap-1.5 z-30 pointer-events-auto">
+                  {displaySliders.map((_, index) => {
+                    const isActive = index === currentIndex
+                    return (
+                      <button
+                        type="button"
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          goToSlide(index)
+                        }}
+                        aria-label={`Go to slide ${index + 1}`}
+                        className="p-1 group focus:outline-none cursor-pointer"
+                      >
+                        <span
+                          className={`block h-1.5 rounded-full transition-all duration-300 ease-out ${
+                            isActive
+                              ? "w-6 sm:w-7 bg-gradient-to-r from-amber-400 to-amber-500 shadow-sm shadow-amber-400/60 ring-1 ring-amber-300/40"
+                              : "w-2 bg-white/40 group-hover:bg-white/70"
+                          }`}
+                        />
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </>
           )}
 
         </div>
