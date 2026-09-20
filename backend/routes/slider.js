@@ -38,6 +38,7 @@ router.get('/admin/all', protect, adminOnly, sliderController.getAllSlidersAdmin
 
 // Public routes
 router.get('/', sliderController.getSliders);
+router.get('/resolve-image', sliderController.resolveImage);
 
 // Custom multer handler that accepts optional files (image and video)
 const optionalUpload = (req, res, next) => {

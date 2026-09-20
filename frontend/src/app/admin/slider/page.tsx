@@ -73,6 +73,7 @@ export default function SliderAdminPage() {
   const [imageMode, setImageMode] = useState<"url" | "upload">("url")
   const [videoMode, setVideoMode] = useState<"url" | "upload">("url")
   const [showVideoOptions, setShowVideoOptions] = useState(false)
+  const [isResolvingUrl, setIsResolvingUrl] = useState(false)
 
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
@@ -84,6 +85,24 @@ export default function SliderAdminPage() {
       router.push("/login?redirect=/admin/slider")
     }
   }, [user, isAdmin, authLoading, router])
+
+  // Helper to resolve ImgBB webpage link (ibb.co/xyz) to direct image link (i.ibb.co/...png)
+  const resolveImgBbUrl = async (url: string): Promise<string> => {
+    const trimmed = url.trim()
+    if (trimmed.includes("ibb.co/") && !trimmed.includes("i.ibb.co/")) {
+      try {
+        const cleanUrl = trimmed.split("?")[0].replace(/\/$/, "")
+        const res = await fetch(`${cleanUrl}/oembed.json`)
+        if (res.ok) {
+          const data = await res.json()
+          if (data.url) return data.url
+        }
+      } catch (err) {
+        console.warn("Error resolving ImgBB oembed:", err)
+      }
+    }
+    return trimmed
+  }
 
   // Fetch sliders
   const { data: slidersData, isLoading } = useQuery(
@@ -158,6 +177,7 @@ export default function SliderAdminPage() {
     setImageMode("url")
     setVideoMode("url")
     setShowVideoOptions(false)
+    setIsResolvingUrl(false)
     if (fileInputRef.current) fileInputRef.current.value = ""
     if (videoInputRef.current) videoInputRef.current.value = ""
   }
@@ -193,10 +213,29 @@ export default function SliderAdminPage() {
     }
   }
 
-  // Handle URL changes
-  const handleImageUrlChange = (url: string) => {
-    setFormData((prev) => ({ ...prev, image: url.trim(), imageFile: null }))
-    setImagePreview(url.trim() ? getApiImageUrl(url.trim()) : null)
+  // Handle URL changes with automatic ImgBB conversion
+  const handleImageUrlChange = async (url: string) => {
+    const trimmed = url.trim()
+    setFormData((prev) => ({ ...prev, image: trimmed, imageFile: null }))
+
+    if (trimmed.includes("ibb.co/") && !trimmed.includes("i.ibb.co/")) {
+      setIsResolvingUrl(true)
+      try {
+        const directUrl = await resolveImgBbUrl(trimmed)
+        if (directUrl && directUrl !== trimmed) {
+          setFormData((prev) => ({ ...prev, image: directUrl }))
+          setImagePreview(directUrl)
+          toast.success("ImgBB link converted to direct image!")
+          return
+        }
+      } catch (e) {
+        console.error("Auto resolve error:", e)
+      } finally {
+        setIsResolvingUrl(false)
+      }
+    }
+
+    setImagePreview(trimmed ? getApiImageUrl(trimmed) : null)
   }
 
   const handleVideoUrlChange = (url: string) => {
@@ -235,7 +274,7 @@ export default function SliderAdminPage() {
     if (videoInputRef.current) videoInputRef.current.value = ""
   }
 
-  const prepareFormData = (): FormData => {
+  const prepareFormData = (imageOverride?: string): FormData => {
     const formDataToSend = new FormData()
     formDataToSend.append("title", formData.title || "")
     formDataToSend.append("subtitle", formData.subtitle || "")
@@ -244,12 +283,14 @@ export default function SliderAdminPage() {
     formDataToSend.append("isActive", String(formData.isActive))
     formDataToSend.append("order", String(formData.order || 0))
 
+    const finalImage = imageOverride || formData.image
+
     // Handle Image: Send file if uploaded, otherwise send URL
     if (formData.imageFile) {
       formDataToSend.append("image", formData.imageFile)
-    } else if (formData.image) {
-      formDataToSend.append("imageUrl", formData.image)
-      formDataToSend.append("image", formData.image)
+    } else if (finalImage) {
+      formDataToSend.append("imageUrl", finalImage)
+      formDataToSend.append("image", finalImage)
     }
 
     // Handle Video: Send file if uploaded, otherwise send URL
@@ -263,7 +304,7 @@ export default function SliderAdminPage() {
     return formDataToSend
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.image && !formData.imageFile) {
@@ -271,7 +312,15 @@ export default function SliderAdminPage() {
       return
     }
 
-    const formDataToSend = prepareFormData()
+    let finalImageUrl = formData.image
+    if (finalImageUrl && finalImageUrl.includes("ibb.co/") && !finalImageUrl.includes("i.ibb.co/")) {
+      setIsResolvingUrl(true)
+      finalImageUrl = await resolveImgBbUrl(finalImageUrl)
+      setIsResolvingUrl(false)
+      setFormData((prev) => ({ ...prev, image: finalImageUrl }))
+    }
+
+    const formDataToSend = prepareFormData(finalImageUrl)
 
     if (isEditDialogOpen && selectedSlide) {
       updateMutation.mutate({ id: selectedSlide._id!, formDataToSend })
@@ -623,11 +672,17 @@ export default function SliderAdminPage() {
                   <Input
                     value={formData.image}
                     onChange={(e) => handleImageUrlChange(e.target.value)}
-                    placeholder="e.g. https://i.ibb.co/xyz123/banner.jpg"
+                    placeholder="e.g. https://i.ibb.co/.../banner.png"
                     className="font-mono text-xs sm:text-sm bg-white dark:bg-slate-950"
                   />
+                  {formData.image && formData.image.includes("ibb.co/") && !formData.image.includes("i.ibb.co/") && (
+                    <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs space-y-1">
+                      <p className="font-semibold">⚠️ Yeh ImgBB ka Webpage Link hai, Direct Image Link nahi:</p>
+                      <p>ImgBB par photo par Right-Click karein aur <strong>&quot;Copy Image Address&quot;</strong> (ya Direct Link dropdown) select karein. Direct link hamesha <code className="font-bold">i.ibb.co/...</code> se shuru hota hai.</p>
+                    </div>
+                  )}
                   <p className="text-[11px] text-muted-foreground">
-                    Paste direct link from <span className="font-semibold text-indigo-600 dark:text-indigo-400">ImgBB</span>, Cloudinary, or any image URL. Permanent and loads instantly.
+                    Direct image link paste karein (e.g. <span className="font-semibold text-indigo-600 dark:text-indigo-400">https://i.ibb.co/.../banner.png</span>). Permanent aur instant load hota hai.
                   </p>
                 </div>
               ) : (

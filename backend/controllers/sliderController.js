@@ -1,6 +1,45 @@
 // Import Slider model directly
 const Slider = require('../models/Slider');
 
+// Helper to resolve webpage links (like ImgBB https://ibb.co/xyz) to direct image URLs (https://i.ibb.co/...)
+const resolveDirectImageUrl = async (url) => {
+  if (!url || typeof url !== 'string') return url;
+  const trimmed = url.trim();
+  if (trimmed.includes('ibb.co/') && !trimmed.includes('i.ibb.co/')) {
+    try {
+      const cleanUrl = trimmed.split('?')[0].replace(/\/$/, '');
+      const res = await fetch(`${cleanUrl}/oembed.json`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.url) return data.url;
+      }
+    } catch (err) {
+      console.warn('Could not resolve ImgBB oembed:', err.message);
+    }
+  }
+  return trimmed;
+};
+
+// @desc    Resolve image link (e.g. ImgBB page to direct image)
+// @route   GET /api/slider/resolve-image?url=...
+// @access  Public
+exports.resolveImage = async (req, res, next) => {
+  try {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ success: false, message: 'URL is required' });
+    }
+    const directUrl = await resolveDirectImageUrl(url);
+    res.status(200).json({
+      success: true,
+      originalUrl: url,
+      directUrl
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get all active sliders (Public)
 // @route   GET /api/slider
 // @access  Public
@@ -83,6 +122,8 @@ exports.createSlider = async (req, res, next) => {
       });
     }
 
+    image = await resolveDirectImageUrl(image);
+
     // Handle video: use uploaded file path or URL from body
     let video = req.body.videoUrl;
     if (!video && typeof req.body.video === 'string') {
@@ -163,7 +204,7 @@ exports.updateSlider = async (req, res, next) => {
     const duration = videoDuration !== undefined ? parseInt(videoDuration) : undefined;
 
     // Update fields
-    if (image && typeof image === 'string') slider.image = image;
+    if (image && typeof image === 'string') slider.image = await resolveDirectImageUrl(image);
     if (video !== undefined) slider.video = video;
     if (duration !== undefined) slider.videoDuration = duration;
     if (title !== undefined) slider.title = title;
