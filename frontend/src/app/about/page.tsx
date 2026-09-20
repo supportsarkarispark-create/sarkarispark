@@ -1,8 +1,6 @@
 "use client"
 
-import Link from "next/link"
 import { useQuery } from "react-query"
-import { Button } from "@/components/ui/Button"
 import { Card, CardContent } from "@/components/ui/Card"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
@@ -12,10 +10,6 @@ import {
   Target,
   Compass,
   Award,
-  Mail,
-  Phone,
-  MapPin,
-  ArrowRight,
   BookOpen,
   BarChart3,
   Users,
@@ -28,7 +22,6 @@ export default function AboutPage() {
   const { data: settingsData, isLoading } = useQuery(["settings"], () => settingsAPI.getSettings())
 
   const aboutSection = settingsData?.data?.settings?.aboutSection || {}
-  const contactInfo = settingsData?.data?.settings?.contactInfo || {}
 
   // Fallbacks for complete and robust details
   const title = aboutSection.title || "About Sarkari Spark"
@@ -225,41 +218,6 @@ export default function AboutPage() {
                   </div>
                 )
               })}
-            </div>
-          </div>
-
-          {/* Quick Contact & Action Strip */}
-          <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-6 md:p-8 border border-slate-800 shadow-lg">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="space-y-2 text-center md:text-left">
-                <h3 className="text-xl font-bold text-white">Need Support or Have Questions?</h3>
-                <p className="text-xs md:text-sm text-slate-300 max-w-md">
-                  Our academic helpdesk is ready to assist you on your exam preparation journey.
-                </p>
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2 text-xs text-slate-300">
-                  <div className="flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{contactInfo.email || "support@sarkarispark.com"}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{contactInfo.phone || "+91 98765 43210"}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{contactInfo.address || "New Delhi, India"}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 shrink-0">
-                <Link href="/exams">
-                  <Button className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg shadow-md gap-2">
-                    Explore Mock Tests
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-              </div>
             </div>
           </div>
 
