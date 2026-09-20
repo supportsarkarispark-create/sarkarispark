@@ -26,7 +26,8 @@ import {
   Eye,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { format } from "date-fns"
@@ -40,6 +41,7 @@ export default function AdminAdmitCardsPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedAdmitCard, setSelectedAdmitCard] = useState<any>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -225,205 +227,309 @@ export default function AdminAdmitCardsPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back
+                <Button variant="ghost" size="sm" className="hover:bg-background/80 text-muted-foreground">
+                  <ArrowLeft className="h-4 w-4 mr-1.5" />
+                  Back to Admin Dashboard
                 </Button>
               </Link>
             </div>
-            <h1 className="text-3xl font-bold">Sarkari Admit Cards</h1>
-            <p className="text-muted-foreground">
-              Manage government exam admit card announcements
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
+                <FileText className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Sarkari Admit Cards</h1>
+                <p className="text-muted-foreground text-sm">
+                  Publish, update, and manage official exam admit cards & hall tickets
+                </p>
+              </div>
+            </div>
           </div>
           <Button onClick={() => {
             resetForm()
             setIsAddDialogOpen(true)
-          }} className="gap-2">
+          }} className="gap-2 shadow-sm">
             <Plus className="h-4 w-4" />
             Add Admit Card
           </Button>
         </div>
 
         {/* Filters */}
-        <Card className="mb-6">
+        <Card className="mb-6 border-border/60 shadow-sm bg-card/70 backdrop-blur-sm">
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search admit cards..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value)
-                      setCurrentPage(1)
-                    }}
-                    className="pl-10"
-                  />
-                </div>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search admit cards by title or post name..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  className="pl-10 h-10"
+                />
               </div>
+              {searchQuery && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchQuery("")}
+                  className="text-xs"
+                >
+                  Clear Search
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Stats */}
-        <div className="grid sm:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Total</p>
-              <p className="text-2xl font-bold">{total}</p>
+        {/* Stats Grid - Admin Control Metrics */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <Card className="border-border/60 shadow-sm bg-card/90 hover:shadow-md transition-shadow">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Cards</p>
+                  <p className="text-2xl font-bold mt-1 text-foreground">{total}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">All announcements</p>
+                </div>
+                <div className="h-11 w-11 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <FileText className="h-5 w-5" />
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Latest</p>
-              <p className="text-2xl font-bold text-green-600">
-                {admitCards.filter((ac: any) => ac.isLatest).length}
-              </p>
+
+          <Card className="border-border/60 shadow-sm bg-card/90 hover:shadow-md transition-shadow">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Latest Marked</p>
+                  <p className="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400">
+                    {admitCards.filter((ac: any) => ac.isLatest).length}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Featured badge on</p>
+                </div>
+                <div className="h-11 w-11 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Active</p>
-              <p className="text-2xl font-bold text-blue-600">
-                {admitCards.filter((ac: any) => ac.isActive).length}
-              </p>
+
+          <Card className="border-border/60 shadow-sm bg-card/90 hover:shadow-md transition-shadow">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Active Status</p>
+                  <p className="text-2xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">
+                    {admitCards.filter((ac: any) => ac.isActive).length}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Live on public site</p>
+                </div>
+                <div className="h-11 w-11 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5" />
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Total Views</p>
-              <p className="text-2xl font-bold text-purple-600">
-                {admitCards.reduce((sum: number, ac: any) => sum + (ac.viewCount || 0), 0)}
-              </p>
+
+          <Card className="border-border/60 shadow-sm bg-card/90 hover:shadow-md transition-shadow">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Student Views</p>
+                  <p className="text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
+                    {admitCards.reduce((sum: number, ac: any) => sum + (ac.viewCount || 0), 0)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Total page views</p>
+                </div>
+                <div className="h-11 w-11 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                  <Eye className="h-5 w-5" />
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Admit Cards Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Admit Cards ({total})
-            </CardTitle>
+        <Card className="border-border/60 shadow-sm overflow-hidden">
+          <CardHeader className="bg-muted/40 border-b border-border/40 py-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileText className="h-5 w-5 text-primary" />
+                <span>Admit Card Records</span>
+                <Badge variant="secondary" className="font-mono text-xs">{total}</Badge>
+              </CardTitle>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-16">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : admitCards.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">No admit cards found</p>
+              <div className="text-center py-16 px-4">
+                <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                  <FileText className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-semibold mb-1">No admit cards found</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  {searchQuery ? "No results match your search query." : "Get started by adding your first government admit card announcement."}
+                </p>
                 <Button onClick={() => {
                   resetForm()
                   setIsAddDialogOpen(true)
-                }}>
-                  <Plus className="h-4 w-4 mr-1" />
+                }} size="sm">
+                  <Plus className="h-4 w-4 mr-1.5" />
                   Add First Admit Card
                 </Button>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="text-left p-4 font-medium">Title</th>
-                      <th className="text-left p-4 font-medium">Post Name</th>
-                      <th className="text-left p-4 font-medium">Release Date</th>
-                      <th className="text-left p-4 font-medium">Last Date</th>
-                      <th className="text-left p-4 font-medium">Views</th>
-                      <th className="text-left p-4 font-medium">Status</th>
-                      <th className="text-left p-4 font-medium">Actions</th>
+                    <tr className="border-b bg-muted/30 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <th className="text-left p-4">Image</th>
+                      <th className="text-left p-4">Title & Post</th>
+                      <th className="text-left p-4">Dates</th>
+                      <th className="text-left p-4">Views</th>
+                      <th className="text-left p-4">Status</th>
+                      <th className="text-right p-4">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border/60">
                     {admitCards.map((admitCard: any) => (
-                      <tr key={admitCard._id} className="border-b hover:bg-muted/30">
+                      <tr key={admitCard._id} className="hover:bg-muted/40 transition-colors">
                         <td className="p-4">
-                          <div>
-                            <p className="font-medium line-clamp-1">{admitCard.title}</p>
+                          {admitCard.image ? (
+                            <button
+                              type="button"
+                              onClick={() => setPreviewImage(admitCard.image)}
+                              className="h-12 w-12 rounded-lg overflow-hidden border border-border/80 bg-muted block hover:opacity-80 transition-opacity"
+                              title="Click to view image"
+                            >
+                              <img
+                                src={admitCard.image}
+                                alt={admitCard.title}
+                                className="h-full w-full object-cover"
+                              />
+                            </button>
+                          ) : (
+                            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-[10px] border border-dashed border-border text-center p-1">
+                              No image
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4">
+                          <div className="max-w-md">
+                            <p className="font-semibold text-foreground leading-snug">{admitCard.title}</p>
                             {admitCard.postName && (
-                              <p className="text-xs text-muted-foreground">{admitCard.postName}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{admitCard.postName}</p>
+                            )}
+                            {admitCard.downloadLink && (
+                              <a
+                                href={admitCard.downloadLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline mt-1.5"
+                              >
+                                <span>Official Download Link</span>
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
                             )}
                           </div>
                         </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2 text-sm">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
-                            {format(new Date(admitCard.admitCardReleaseDate), "MMM dd, yyyy")}
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          {admitCard.lastDateToDownload ? (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Calendar className="h-4 w-4 text-muted-foreground" />
-                              {format(new Date(admitCard.lastDateToDownload), "MMM dd, yyyy")}
+                        <td className="p-4 whitespace-nowrap">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs text-foreground">
+                              <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span>Release: {format(new Date(admitCard.admitCardReleaseDate), "dd MMM yyyy")}</span>
                             </div>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
-                        </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2 text-sm">
-                            <Eye className="h-4 w-4 text-muted-foreground" />
-                            {admitCard.viewCount || 0}
+                            {admitCard.lastDateToDownload && (
+                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <span className="font-mono text-[10px] bg-muted px-1 rounded">Last:</span>
+                                <span>{format(new Date(admitCard.lastDateToDownload), "dd MMM yyyy")}</span>
+                              </div>
+                            )}
                           </div>
                         </td>
-                        <td className="p-4">
-                          {admitCard.isLatest && (
-                            <Badge className="bg-amber-100 text-amber-800 gap-1">
-                              <TrendingUp className="h-3 w-3" />
-                              Latest
-                            </Badge>
-                          )}
-                          <Badge variant={admitCard.isActive ? "default" : "secondary"}>
-                            {admitCard.isActive ? "Active" : "Inactive"}
-                          </Badge>
+                        <td className="p-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Eye className="h-3.5 w-3.5" />
+                            <span className="font-mono font-medium text-foreground">{admitCard.viewCount || 0}</span>
+                          </div>
                         </td>
-                        <td className="p-4">
-                          <div className="flex gap-2">
+                        <td className="p-4 whitespace-nowrap">
+                          <div className="flex flex-col gap-1 items-start">
+                            <button
+                              type="button"
+                              onClick={() => toggleActiveMutation.mutate(admitCard._id)}
+                              className="cursor-pointer"
+                              title="Click to toggle Active / Inactive"
+                            >
+                              <Badge
+                                variant={admitCard.isActive ? "default" : "secondary"}
+                                className={`text-[11px] gap-1 cursor-pointer ${
+                                  admitCard.isActive
+                                    ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
+                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                }`}
+                              >
+                                {admitCard.isActive ? (
+                                  <>
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    Active
+                                  </>
+                                ) : (
+                                  "Inactive"
+                                )}
+                              </Badge>
+                            </button>
+                            {admitCard.isLatest && (
+                              <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-[10px] gap-1">
+                                <TrendingUp className="h-2.5 w-2.5" />
+                                Latest
+                              </Badge>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-4 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary"
                               onClick={() => openEditDialog(admitCard)}
-                              title="Edit"
+                              title="Edit Admit Card"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
+                              className={`h-8 w-8 p-0 ${
+                                admitCard.isLatest
+                                  ? "text-amber-600 hover:bg-amber-500/10"
+                                  : "text-muted-foreground hover:bg-muted"
+                              }`}
                               onClick={() => toggleLatestMutation.mutate({ id: admitCard._id })}
-                              title="Toggle Featured"
+                              title={admitCard.isLatest ? "Unmark Latest" : "Mark as Latest"}
                             >
                               <TrendingUp className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => toggleActiveMutation.mutate(admitCard._id)}
-                              title="Toggle Active"
-                            >
-                              {admitCard.isActive ? (
-                                <CheckCircle className="h-4 w-4 text-green-600" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-red-600" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                               onClick={() => {
                                 setSelectedAdmitCard(admitCard)
                                 setIsDeleteDialogOpen(true)
                               }}
-                              title="Delete"
+                              title="Delete Admit Card"
                             >
-                              <Trash2 className="h-4 w-4 text-red-600" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </td>
@@ -494,29 +600,52 @@ export default function AdminAdmitCardsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Image</label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      // Handle file upload - for now store as base64 or send to upload endpoint
-                      const reader = new FileReader()
-                      reader.onloadend = () => {
-                        setFormData({ ...formData, image: reader.result as string })
-                      }
-                      reader.readAsDataURL(file)
-                    }
-                  }}
-                />
+                <label className="text-sm font-medium">Image (Direct URL or Upload)</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    placeholder="Paste image URL (e.g. https://i.ibb.co/...)"
+                    className="flex-1"
+                  />
+                  <label className="cursor-pointer inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 whitespace-nowrap">
+                    <span>Upload File</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, image: reader.result as string })
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 {formData.image && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center gap-3">
                     <img
                       src={formData.image}
                       alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg"
+                      className="w-16 h-16 object-cover rounded-lg border border-border"
+                      onError={(e) => {
+                        (e.target as any).style.display = "none"
+                      }}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive h-7 px-2"
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                    >
+                      Remove
+                    </Button>
                   </div>
                 )}
               </div>
@@ -556,33 +685,57 @@ export default function AdminAdmitCardsPage() {
                 <Input
                   value={formData.descriptionText}
                   onChange={(e) => setFormData({ ...formData, descriptionText: e.target.value })}
-                  placeholder="e.g., View Description"
+                  placeholder="e.g., View Detailed Notification / Syllabus"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description Image</label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const reader = new FileReader()
-                      reader.onloadend = () => {
-                        setFormData({ ...formData, descriptionImage: reader.result as string })
-                      }
-                      reader.readAsDataURL(file)
-                    }
-                  }}
-                />
+                <label className="text-sm font-medium">Description Image (Direct URL or Upload)</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.descriptionImage}
+                    onChange={(e) => setFormData({ ...formData, descriptionImage: e.target.value })}
+                    placeholder="Paste description image URL (e.g. https://i.ibb.co/...)"
+                    className="flex-1"
+                  />
+                  <label className="cursor-pointer inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 whitespace-nowrap">
+                    <span>Upload File</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, descriptionImage: reader.result as string })
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 {formData.descriptionImage && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center gap-3">
                     <img
                       src={formData.descriptionImage}
                       alt="Description Preview"
-                      className="w-32 h-32 object-cover rounded-lg"
+                      className="w-16 h-16 object-cover rounded-lg border border-border"
+                      onError={(e) => {
+                        (e.target as any).style.display = "none"
+                      }}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive h-7 px-2"
+                      onClick={() => setFormData({ ...formData, descriptionImage: "" })}
+                    >
+                      Remove
+                    </Button>
                   </div>
                 )}
               </div>
@@ -642,28 +795,52 @@ export default function AdminAdmitCardsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Image</label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const reader = new FileReader()
-                      reader.onloadend = () => {
-                        setFormData({ ...formData, image: reader.result as string })
-                      }
-                      reader.readAsDataURL(file)
-                    }
-                  }}
-                />
+                <label className="text-sm font-medium">Image (Direct URL or Upload)</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    placeholder="Paste image URL (e.g. https://i.ibb.co/...)"
+                    className="flex-1"
+                  />
+                  <label className="cursor-pointer inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 whitespace-nowrap">
+                    <span>Upload File</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, image: reader.result as string })
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 {formData.image && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center gap-3">
                     <img
                       src={formData.image}
                       alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg"
+                      className="w-16 h-16 object-cover rounded-lg border border-border"
+                      onError={(e) => {
+                        (e.target as any).style.display = "none"
+                      }}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive h-7 px-2"
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                    >
+                      Remove
+                    </Button>
                   </div>
                 )}
               </div>
@@ -706,28 +883,52 @@ export default function AdminAdmitCardsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description Image</label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const reader = new FileReader()
-                      reader.onloadend = () => {
-                        setFormData({ ...formData, descriptionImage: reader.result as string })
-                      }
-                      reader.readAsDataURL(file)
-                    }
-                  }}
-                />
+                <label className="text-sm font-medium">Description Image (Direct URL or Upload)</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.descriptionImage}
+                    onChange={(e) => setFormData({ ...formData, descriptionImage: e.target.value })}
+                    placeholder="Paste description image URL (e.g. https://i.ibb.co/...)"
+                    className="flex-1"
+                  />
+                  <label className="cursor-pointer inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 whitespace-nowrap">
+                    <span>Upload File</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, descriptionImage: reader.result as string })
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 {formData.descriptionImage && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center gap-3">
                     <img
                       src={formData.descriptionImage}
                       alt="Description Preview"
-                      className="w-32 h-32 object-cover rounded-lg"
+                      className="w-16 h-16 object-cover rounded-lg border border-border"
+                      onError={(e) => {
+                        (e.target as any).style.display = "none"
+                      }}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive h-7 px-2"
+                      onClick={() => setFormData({ ...formData, descriptionImage: "" })}
+                    >
+                      Remove
+                    </Button>
                   </div>
                 )}
               </div>
@@ -784,6 +985,25 @@ export default function AdminAdmitCardsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image Preview Modal */}
+      <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
+        <DialogContent className="max-w-3xl p-4">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold">Admit Card Image Preview</DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-center p-2 bg-muted/20 rounded-lg">
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Admit Card Preview"
+                className="max-h-[75vh] w-auto rounded-lg object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   )

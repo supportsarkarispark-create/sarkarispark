@@ -71,14 +71,14 @@ export default function AdmitCardsPage() {
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-6">
+        <Card className="mb-6 border-border/60 shadow-sm bg-card/80 backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search admit cards by title or post..."
+                    placeholder="Search admit cards by exam title or post..."
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value)
@@ -89,61 +89,37 @@ export default function AdmitCardsPage() {
                 </div>
               </div>
 
-              <Button
-                variant={showLatest ? "default" : "outline"}
-                onClick={() => {
-                  setShowLatest(!showLatest)
-                  setCurrentPage(1)
-                }}
-                className="gap-2"
-              >
-                <TrendingUp className="h-4 w-4" />
-                Latest
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={showLatest ? "default" : "outline"}
+                  onClick={() => {
+                    setShowLatest(!showLatest)
+                    setCurrentPage(1)
+                  }}
+                  className="gap-2"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Latest
+                </Button>
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearchQuery("")
+                      setShowLatest(false)
+                      setCurrentPage(1)
+                    }}
+                    className="gap-1 text-xs text-muted-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                    Reset
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
-
-        {/* Stats */}
-        <div className="grid sm:grid-cols-3 gap-4 mb-6">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Admit Cards</p>
-                  <p className="text-2xl font-bold">{total}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Latest</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {admitCards.filter((ac: any) => ac.isLatest).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Active</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {admitCards.filter((ac: any) => ac.isActive).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Admit Cards List */}
         {isLoading ? (
