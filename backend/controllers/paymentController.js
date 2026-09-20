@@ -628,20 +628,93 @@ exports.getPlans = async (req, res, next) => {
 exports.getSubscriptionStatus = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
+    const now = new Date();
     let status = 'free';
     let isActive = false;
     let expiryDate = null;
     let daysLeft = 0;
 
-    if (user.subscriptionType !== 'free' && user.subscriptionExpiry) {
-      const now = new Date();
-      if (user.subscriptionExpiry > now) {
-        status = user.subscriptionType;
-        isActive = true;
-        expiryDate = user.subscriptionExpiry;
-        daysLeft = Math.ceil((user.subscriptionExpiry - now) / (1000 * 60 * 60 * 24));
-      }
+    // Check if user is admin/superadmin
+    if (user.role === 'admin' || user.role === 'superadmin') {
+      return res.status(200).json({
+        success: true,
+        subscription: {
+          status: 'admin',
+          isActive: true,
+          type: 'allExams',
+          planName: 'Admin Full Access',
+          duration: 'Unlimited / Lifetime',
+          durationType: 'lifetime',
+          expiryDate: null,
+          startDate: user.createdAt,
+          daysLeft: 9999,
+          totalDays: 9999,
+          amountPaid: 0,
+          isAdmin: true
+        }
+      });
+    }
+
+    // Find latest completed payment for the user
+    const latestPayment = await Payment.findOne({
+      userId: req.user.id,
+      status: 'completed'
+    })
+      .sort({ completedAt: -1, createdAt: -1 })
+      .populate('examAccess.examIds', 'title category')
+      .populate('examId', 'title category');
+
+    const targetExpiry = user.subscriptionExpiry || latestPayment?.examAccess?.accessEndDate;
+
+    if (targetExpiry && new Date(targetExpiry) > now && user.subscriptionType !== 'free') {
+      status = user.subscriptionType;
+      isActive = true;
+      expiryDate = new Date(targetExpiry);
+      daysLeft = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
+    }
+
+    // Determine duration and total plan days
+    const durationType = latestPayment?.planDetails?.duration || 
+      (latestPayment?.examAccess?.durationMonths === 12 ? 'yearly' : latestPayment?.examAccess?.durationMonths === 6 ? 'sixMonths' : 'monthly');
+    
+    let totalDays = 30;
+    let durationLabel = '1 Month (30 Days)';
+    if (durationType === 'yearly' || latestPayment?.examAccess?.durationMonths === 12) {
+      totalDays = 365;
+      durationLabel = '1 Year (365 Days)';
+    } else if (durationType === 'sixMonths' || latestPayment?.examAccess?.durationMonths === 6) {
+      totalDays = 180;
+      durationLabel = '6 Months (180 Days)';
+    } else {
+      totalDays = 30;
+      durationLabel = '1 Month (30 Days)';
+    }
+
+    // Calculate plan name
+    let planName = 'Premium Pro Subscription';
+    const planType = latestPayment?.planType || user.subscriptionType;
+    if (planType === 'allExams') {
+      planName = 'All Exams Access (Full Portal)';
+    } else if (planType === 'singleExam') {
+      const examTitle = latestPayment?.examId?.title || 'Selected Exam';
+      planName = `Single Exam Access: ${examTitle}`;
+    } else if (planType === 'customSelection') {
+      const count = latestPayment?.planDetails?.examCount || latestPayment?.examAccess?.examIds?.length || 2;
+      planName = `Custom Pack (${count} Exams Selected)`;
+    }
+
+    const startDate = latestPayment?.examAccess?.accessStartDate || latestPayment?.completedAt || latestPayment?.createdAt || user.createdAt;
+
+    // Accessible exams
+    let accessibleExams = [];
+    if (latestPayment?.examAccess?.examIds && latestPayment.examAccess.examIds.length > 0) {
+      accessibleExams = latestPayment.examAccess.examIds;
+    } else if (latestPayment?.examId) {
+      accessibleExams = [latestPayment.examId];
     }
 
     res.status(200).json({
@@ -649,9 +722,20 @@ exports.getSubscriptionStatus = async (req, res, next) => {
       subscription: {
         status,
         isActive,
-        type: user.subscriptionType,
+        type: planType,
+        planName,
+        duration: durationLabel,
+        durationType,
         expiryDate,
-        daysLeft
+        startDate,
+        daysLeft,
+        totalDays,
+        amountPaid: latestPayment?.amount || 0,
+        orderId: latestPayment?.orderId || null,
+        paymentId: latestPayment?.paymentId || null,
+        paymentMethod: latestPayment?.paymentMethod || 'Razorpay Online',
+        accessibleExams,
+        isAdmin: false
       }
     });
   } catch (error) {

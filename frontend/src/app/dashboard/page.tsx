@@ -328,7 +328,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                {user?.subscriptionType === "free" && (
+                {user?.subscriptionType === "free" ? (
                   <>
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
@@ -338,12 +338,19 @@ export default function DashboardPage() {
                       <Progress value={60} className="bg-white/20" />
                     </div>
                     <Link href="/payment">
-                      <Button className="w-full bg-white text-primary hover:bg-white/90">
+                      <Button className="w-full bg-white text-primary hover:bg-white/90 font-bold">
                         <Zap className="h-4 w-4 mr-2" />
                         Upgrade to Premium
                       </Button>
                     </Link>
                   </>
+                ) : (
+                  <Link href="/payment">
+                    <Button className="w-full bg-white text-indigo-700 hover:bg-white/90 font-bold shadow-md flex items-center justify-center gap-2">
+                      <Crown className="h-4 w-4 text-amber-500" />
+                      View Plan & Days Left
+                    </Button>
+                  </Link>
                 )}
               </CardContent>
             </Card>

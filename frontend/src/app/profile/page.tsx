@@ -358,9 +358,13 @@ export default function ProfilePage() {
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white/10 h-12 rounded-xl">
-                    Manage Billing
-                  </Button>
+                  <Link href="/payment" className="w-full">
+                    <Button className="w-full bg-white text-indigo-700 hover:bg-slate-50 font-bold h-12 rounded-xl shadow-lg flex items-center justify-center gap-2">
+                      <Crown className="h-4 w-4 text-amber-500" />
+                      View Plan & Days Left
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Link>
                 )}
               </CardContent>
             </Card>

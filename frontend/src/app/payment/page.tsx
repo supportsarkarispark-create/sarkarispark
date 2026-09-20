@@ -23,6 +23,13 @@ import {
   Lock,
   Search,
   Gift,
+  Clock,
+  Calendar,
+  Zap,
+  Check,
+  RefreshCw,
+  AlertCircle,
+  ExternalLink,
 } from "lucide-react"
 
 declare global {
@@ -49,6 +56,9 @@ export default function PaymentPage() {
   const [publicCoupons, setPublicCoupons] = useState<any[]>([])
   const [exams, setExams] = useState<any[]>([])
   const [pendingUser, setPendingUser] = useState<any>(null)
+  const [subscription, setSubscription] = useState<any>(null)
+  const [loadingSubscription, setLoadingSubscription] = useState(true)
+  const [showRenewOptions, setShowRenewOptions] = useState(false)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -60,7 +70,28 @@ export default function PaymentPage() {
       }
     }
     loadPricingAndExams()
-  }, [])
+    checkSubscription()
+  }, [user])
+
+  const checkSubscription = async () => {
+    try {
+      setLoadingSubscription(true)
+      const token = typeof window !== "undefined" ? (localStorage.getItem("token") || localStorage.getItem("paymentToken")) : null
+      if (!token) {
+        setSubscription(null)
+        setLoadingSubscription(false)
+        return
+      }
+      const res = await paymentsAPI.getSubscriptionStatus()
+      if (res.data?.success && res.data?.subscription) {
+        setSubscription(res.data.subscription)
+      }
+    } catch (err) {
+      console.error("Failed to check subscription status:", err)
+    } finally {
+      setLoadingSubscription(false)
+    }
+  }
 
   const loadPricingAndExams = async () => {
     try {
@@ -397,6 +428,19 @@ export default function PaymentPage() {
     (e.category && e.category.toLowerCase().includes(examSearch.toLowerCase()))
   )
 
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "Active"
+    try {
+      return new Date(dateStr).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      })
+    } catch (_) {
+      return "Active"
+    }
+  }
+
   if (!plans) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
@@ -413,21 +457,252 @@ export default function PaymentPage() {
         {/* Compact Checkout Header */}
         <div className="bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 text-white py-8 border-b border-indigo-900/30">
           <div className="container mx-auto px-4 max-w-5xl text-center">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-3">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              100% Secure Checkout
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold uppercase tracking-wider mb-3">
+              {subscription?.isActive ? (
+                <>
+                  <Crown className="w-3.5 h-3.5 text-amber-400" />
+                  Premium Pro Member
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  100% Secure Checkout
+                </>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">
-              Upgrade to Sarkari Spark Pro
+              {subscription?.isActive && !showRenewOptions
+                ? "Aapka Pro Subscription Status"
+                : "Upgrade to Sarkari Spark Pro"}
             </h1>
             <p className="text-sm text-slate-300 max-w-xl mx-auto">
-              Get unlimited access to real TCS-pattern mock tests, rank analytics, and complete syllabus papers.
+              {subscription?.isActive && !showRenewOptions
+                ? "Yaha aap apne active plan ki validity, baki bache din aur sabhi unlocked mock test features dekh sakte hain."
+                : "Get unlimited access to real TCS-pattern mock tests, rank analytics, and complete syllabus papers."}
             </p>
           </div>
         </div>
 
-        {/* Main 2-Column Split Content */}
+        {/* Main Content */}
         <main className="container mx-auto px-4 max-w-5xl py-8 md:py-10">
+          {subscription?.isActive && !showRenewOptions ? (
+            <div className="space-y-8 max-w-4xl mx-auto">
+              {/* Big Hero Card */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white p-6 sm:p-8 border-2 border-amber-500/30 shadow-2xl shadow-indigo-950/50">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="relative z-10">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-500 to-amber-600 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                        <Crown className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 flex items-center gap-1 shadow-sm">
+                            <Sparkles className="w-3 h-3" /> Pro Active
+                          </span>
+                          <span className="text-xs font-medium text-emerald-400 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Verified Membership
+                          </span>
+                        </div>
+                        <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                          {subscription.planName || "Sarkari Spark Pro Membership"}
+                        </h2>
+                      </div>
+                    </div>
+
+                    <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/15 text-left sm:text-right">
+                      <p className="text-[11px] uppercase tracking-wider text-indigo-200 font-bold">Plan Duration</p>
+                      <p className="text-base font-extrabold text-white">{subscription.duration || "1 Month"}</p>
+                    </div>
+                  </div>
+
+                  {/* Prominent Days Remaining Counter */}
+                  <div className="my-6 p-5 sm:p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                          <Clock className="w-4 h-4" /> Subscription Validity
+                        </p>
+                        <div className="flex items-baseline gap-2 mt-1">
+                          <span className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400">
+                            {subscription.daysLeft}
+                          </span>
+                          <span className="text-xl sm:text-2xl font-bold text-white">
+                            Din Baki Hain
+                          </span>
+                          <span className="text-xs text-slate-400 font-medium">
+                            ({subscription.daysLeft} days remaining)
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-left md:text-right space-y-1">
+                        <p className="text-xs text-slate-300 flex items-center md:justify-end gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                          Valid Till: <span className="font-bold text-white">
+                            {subscription.expiryDate ? formatDate(subscription.expiryDate) : "Active"}
+                          </span>
+                        </p>
+                        {subscription.startDate && (
+                          <p className="text-[11px] text-slate-400">
+                            Started: {formatDate(subscription.startDate)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Visual Progress Bar */}
+                    <div className="space-y-1.5">
+                      <div className="h-3 w-full bg-white/10 rounded-full overflow-hidden p-0.5">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-amber-500 transition-all duration-500"
+                          style={{
+                            width: `${Math.min(100, Math.max(5, Math.round(((subscription.daysLeft || 1) / (subscription.totalDays || 30)) * 100)))}%`
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[11px] text-slate-400 font-medium px-1">
+                        <span>{Math.max(0, (subscription.totalDays || 30) - (subscription.daysLeft || 0))} din use ho chuke hain</span>
+                        <span className="text-amber-300 font-bold">{subscription.daysLeft} din baki</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4 Details Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Amount Paid</p>
+                      <p className="text-lg font-black text-white mt-0.5">₹{subscription.amountPaid}</p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Payment Mode</p>
+                      <p className="text-sm font-bold text-white mt-1 truncate">{subscription.paymentMethod || "Online (Razorpay)"}</p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Order ID</p>
+                      <p className="text-xs font-mono font-bold text-indigo-300 mt-1 truncate" title={subscription.orderId}>
+                        {subscription.orderId ? subscription.orderId.substring(0, 16) + "..." : "Completed"}
+                      </p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Access Status</p>
+                      <p className="text-sm font-bold text-emerald-400 mt-1 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Full Pro Access
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons inside Hero */}
+                  <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 pt-6 border-t border-white/10">
+                    <Button
+                      onClick={() => router.push("/exams")}
+                      className="w-full sm:flex-1 h-12 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/20 gap-2"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Mock Tests Dena Shuru Karein
+                    </Button>
+
+                    <Button
+                      onClick={() => router.push("/dashboard")}
+                      variant="outline"
+                      className="w-full sm:w-auto h-12 rounded-xl border-white/20 text-white hover:bg-white/10 font-bold text-sm px-6"
+                    >
+                      My Dashboard
+                    </Button>
+
+                    <Button
+                      onClick={() => setShowRenewOptions(true)}
+                      variant="ghost"
+                      className="w-full sm:w-auto h-12 rounded-xl text-indigo-200 hover:text-white hover:bg-white/10 text-xs font-bold px-4 gap-1.5"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      Plan Extend / Change Karein
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Accessible Exams Section if single or custom */}
+              {subscription.accessibleExams && subscription.accessibleExams.length > 0 && subscription.type !== "allExams" && (
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-indigo-600" />
+                    Aapke Unlocked Exams:
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {subscription.accessibleExams.map((exam: any) => (
+                      <div key={exam._id || exam} className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between gap-3">
+                        <div>
+                          <p className="font-bold text-sm text-slate-900 dark:text-white">{exam.title || "Selected Exam"}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{exam.category || "Govt Exam"}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => router.push(`/exams/${exam._id || exam}`)}
+                          className="h-9 px-3 rounded-lg text-xs font-bold shrink-0"
+                        >
+                          Attempt Test 🚀
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Active Pro Benefits Card */}
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-500" />
+                  Aapke Active Pro Features:
+                </h3>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {[
+                    { title: "650+ Mock Tests Unlocked", desc: "SSC, Railway, Banking, UPSC mock test series ka unlimited access." },
+                    { title: "TCS-Pattern Real Simulation", desc: "Asli pariksha jaisa exact interface, timer aur question navigation." },
+                    { title: "All-India Rank & Analytics", desc: "Har test ke turant baad AI rank, accuracy aur percentile report." },
+                    { title: "Step-by-Step Solutions", desc: "Hindi aur English dono bhashao me vishleshnatmak uttar." },
+                    { title: "100% Ad-Free Experience", desc: "Bina kisi ad ya rukawat ke shanti se padhai karein." },
+                    { title: "PDF Notes & Answer Keys", desc: "Revision ke liye downloadable study material aur test PDFs." },
+                  ].map((feat, i) => (
+                    <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold mb-2">
+                        <Check className="w-4 h-4" />
+                      </div>
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-1">{feat.title}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{feat.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              {subscription?.isActive && (
+                <div className="mb-6 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <Crown className="w-5 h-5 text-amber-500 shrink-0" />
+                    <div>
+                      <p className="text-sm font-bold text-indigo-950 dark:text-indigo-200">
+                        Aapka plan abhi active hai ({subscription.daysLeft} din baki hain)
+                      </p>
+                      <p className="text-xs text-indigo-700 dark:text-indigo-300">
+                        Aap naya plan chun kar apni validity ko aage badha sakte hain ya upgrade kar sakte hain.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowRenewOptions(false)}
+                    className="h-8 text-xs font-bold shrink-0"
+                  >
+                    ← Wapas Active Plan Dekhein
+                  </Button>
+                </div>
+              )}
           {pendingUser && !user && (
             <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
               <div className="flex items-center gap-3">
@@ -977,6 +1252,8 @@ export default function PaymentPage() {
             </div>
 
           </div>
+            </div>
+          )}
         </main>
       </div>
 

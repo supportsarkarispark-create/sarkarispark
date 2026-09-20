@@ -185,8 +185,17 @@ export default function Navbar() {
                       )}
                       <Link href="/payment">
                         <Button variant="ghost" className="w-full justify-start">
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          Upgrade to Premium
+                          {user.subscriptionType && user.subscriptionType !== "free" ? (
+                            <>
+                              <Crown className="mr-2 h-4 w-4 text-amber-500" />
+                              <span className="text-amber-600 dark:text-amber-400 font-bold">My Subscription (Pro)</span>
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="mr-2 h-4 w-4" />
+                              Upgrade to Premium
+                            </>
+                          )}
                         </Button>
                       </Link>
                       <hr className="my-2" />
