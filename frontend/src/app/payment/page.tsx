@@ -332,8 +332,13 @@ export default function PaymentPage() {
   }
 
   const initiateRazorpay = (order: any, payment: any, currentUser: any) => {
+    let razorpayKey = order.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    if (!razorpayKey || razorpayKey.startsWith("rzp_test_")) {
+      razorpayKey = "rzp_live_TeEhKi4wCZxUnV";
+    }
+
     const options = {
-      key: order.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TeEhKi4wCZxUnV",
+      key: razorpayKey,
       amount: order.amount,
       currency: order.currency,
       name: "Sarkari Spark",

@@ -14,7 +14,8 @@ const nextConfig = {
   },
   env: {
     API_URL: process.env.API_URL || 'http://localhost:5000/api',
-    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
+    RAZORPAY_KEY_ID: 'rzp_live_TeEhKi4wCZxUnV',
+    NEXT_PUBLIC_RAZORPAY_KEY_ID: 'rzp_live_TeEhKi4wCZxUnV',
   },
 }
 

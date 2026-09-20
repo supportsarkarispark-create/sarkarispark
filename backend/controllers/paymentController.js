@@ -8,10 +8,16 @@ console.log('[DEBUG] Razorpay Environment Variables:');
 console.log('[DEBUG] RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID ? 'Set' : 'NOT SET');
 console.log('[DEBUG] RAZORPAY_KEY_SECRET:', process.env.RAZORPAY_KEY_SECRET ? 'Set' : 'NOT SET');
 
-// Initialize Razorpay with safe fallbacks so server never crashes on startup
+// Initialize Razorpay with safe fallbacks and force LIVE mode
 const getRazorpay = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_live_TeEhKi4wCZxUnV';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || '0TKafOi6GFkC2rMLg75BCY1R';
+  let key_id = process.env.RAZORPAY_KEY_ID;
+  let key_secret = process.env.RAZORPAY_KEY_SECRET;
+
+  // If key is missing or is set to old test key in dashboard environment variables, override with LIVE keys
+  if (!key_id || key_id.startsWith('rzp_test_') || key_id.includes('test')) {
+    key_id = 'rzp_live_TeEhKi4wCZxUnV';
+    key_secret = '0TKafOi6GFkC2rMLg75BCY1R';
+  }
   return new Razorpay({ key_id, key_secret });
 };
 
@@ -346,7 +352,9 @@ exports.createOrder = async (req, res, next) => {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
-        key: process.env.RAZORPAY_KEY_ID || 'rzp_live_TeEhKi4wCZxUnV'
+        key: (!process.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID.startsWith('rzp_test_'))
+          ? 'rzp_live_TeEhKi4wCZxUnV'
+          : process.env.RAZORPAY_KEY_ID
       },
       payment: {
         id: payment._id,
@@ -378,8 +386,12 @@ exports.verifyPayment = async (req, res, next) => {
 
     // Verify signature
     const body = razorpay_order_id + '|' + razorpay_payment_id;
+    let secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret || secret === '0cq2mzTFguSP77G18wl6Qhfs' || process.env.RAZORPAY_KEY_ID?.startsWith('rzp_test_')) {
+      secret = '0TKafOi6GFkC2rMLg75BCY1R';
+    }
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '0TKafOi6GFkC2rMLg75BCY1R')
+      .createHmac('sha256', secret)
       .update(body.toString())
       .digest('hex');
 
