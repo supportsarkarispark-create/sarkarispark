@@ -352,9 +352,9 @@ exports.createOrder = async (req, res, next) => {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
-        key: (!process.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID.startsWith('rzp_test_'))
-          ? 'rzp_live_TeEhKi4wCZxUnV'
-          : process.env.RAZORPAY_KEY_ID
+        key: (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID.startsWith('rzp_live_'))
+          ? process.env.RAZORPAY_KEY_ID
+          : 'rzp_live_TeEhKi4wCZxUnV'
       },
       payment: {
         id: payment._id,

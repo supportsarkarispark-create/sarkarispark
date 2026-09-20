@@ -332,9 +332,12 @@ export default function PaymentPage() {
   }
 
   const initiateRazorpay = (order: any, payment: any, currentUser: any) => {
-    let razorpayKey = order.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-    if (!razorpayKey || razorpayKey.startsWith("rzp_test_")) {
-      razorpayKey = "rzp_live_TeEhKi4wCZxUnV";
+    // Strictly force Live Razorpay Key
+    let razorpayKey = "rzp_live_TeEhKi4wCZxUnV";
+    if (order?.key && order.key.startsWith("rzp_live_")) {
+      razorpayKey = order.key;
+    } else if (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID.startsWith("rzp_live_")) {
+      razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     }
 
     const options = {
