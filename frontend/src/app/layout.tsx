@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "03D2Vkgc-TRfLibiAZ30Tscxp-Byw6zpHbXTrtr4pnk",
   },
   openGraph: {
     type: "website",
@@ -113,6 +113,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta
+          name="google-site-verification"
+          content="03D2Vkgc-TRfLibiAZ30Tscxp-Byw6zpHbXTrtr4pnk"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
