@@ -411,7 +411,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
             {/* Left Content Column */}
-            <div className="lg:col-span-7 xl:col-span-7 space-y-4 sm:space-y-6 lg:space-y-7 text-left">
+            <div className="lg:col-span-6 xl:col-span-6 space-y-4 sm:space-y-6 lg:space-y-7 text-left">
 
               {/* Trust Badge - Compact & High-Positioned on Mobile */}
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-xs text-[10px] sm:text-xs font-semibold text-indigo-900 dark:text-indigo-300">
@@ -526,7 +526,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Column: Image Banner Slider (Connected to Admin Panel) */}
-            <div className="lg:col-span-5 xl:col-span-5 relative w-full flex justify-center lg:justify-end">
+            <div className="lg:col-span-6 xl:col-span-6 relative w-full flex justify-center lg:justify-end">
               <HeroSlider sliders={sliders} />
             </div>
 
@@ -1230,7 +1230,7 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
       <div className="relative p-1 sm:p-1.5 rounded-[20px] sm:rounded-[24px] bg-gradient-to-b from-white/90 via-white/50 to-white/20 dark:from-slate-700/60 dark:via-slate-800/40 dark:to-slate-900/60 shadow-xl shadow-indigo-950/10 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md">
         
         {/* Slider Viewport with Controlled Proportional Height */}
-        <div className="relative w-full h-[220px] sm:h-[260px] md:h-[290px] lg:h-[310px] xl:h-[330px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
+        <div className="relative w-full h-[230px] sm:h-[280px] md:h-[330px] lg:h-[360px] xl:h-[390px] 2xl:h-[410px] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-slate-950">
           
           {/* Autoplay Progress Line */}
           {displaySliders.length > 1 && (
@@ -1307,26 +1307,26 @@ function HeroSlider({ sliders }: { sliders: any[] }) {
           {/* Bottom Content Area */}
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 space-y-1 sm:space-y-1.5 z-20 pointer-events-none">
             {currentSlide?.title && (
-              <h3 className="text-white text-sm sm:text-lg lg:text-xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 pr-16 sm:pr-0">
+              <h3 className="text-white text-sm sm:text-lg lg:text-2xl font-black tracking-tight leading-snug drop-shadow-md line-clamp-1 pr-16 sm:pr-0">
                 {currentSlide.title}
               </h3>
             )}
             {currentSlide?.subtitle && (
-              <p className="text-slate-200/90 text-[11px] sm:text-xs font-normal line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-md drop-shadow">
+              <p className="text-slate-200/90 text-[11px] sm:text-xs lg:text-sm font-normal line-clamp-1 sm:line-clamp-2 max-w-sm sm:max-w-xl drop-shadow">
                 {currentSlide.subtitle}
               </p>
             )}
 
             {/* Smart Interactive CTA Pill */}
-            <div className="pt-1 sm:pt-1.5 flex items-center gap-2 sm:gap-3 pointer-events-auto">
+            <div className="pt-1 sm:pt-2 flex items-center gap-2 sm:gap-3 pointer-events-auto">
               <button
                 type="button"
                 onClick={() => handleSlideClick(currentSlide?.redirectUrl)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-[11px] sm:text-xs shadow-md shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-[11px] sm:text-xs lg:text-sm shadow-md shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.03] active:scale-95 transition-all cursor-pointer"
               >
-                <Play className="h-3 w-3 fill-slate-950 shrink-0" />
+                <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-slate-950 shrink-0" />
                 <span>Attempt Mock Test</span>
-                <ArrowRight className="h-3 w-3 shrink-0" />
+                <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
               </button>
               {currentSlide?.redirectUrl && (
                 <span
