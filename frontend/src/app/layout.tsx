@@ -88,7 +88,8 @@ export default function RootLayout({
         description:
           "Online test series and preparation platform for Indian government competitive exams.",
         sameAs: [
-          "https://youtube.com/@sarkarispark",
+          "https://youtube.com/@sarkarispark-2026?si=TW7tpWlBpqBLLFQM",
+          "https://www.instagram.com/sarkari_spark?stkn=MWZmN3FpYnkxOHJyeQ=="
         ],
       },
       {

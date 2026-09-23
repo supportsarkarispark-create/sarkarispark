@@ -123,8 +123,8 @@ const SettingsSchema = new mongoose.Schema({
     address: { type: String, default: 'New Delhi, India' },
     whatsapp: { type: String, default: '' },
     facebook: { type: String, default: '' },
-    instagram: { type: String, default: '' },
-    youtube: { type: String, default: '' }
+    instagram: { type: String, default: 'https://www.instagram.com/sarkari_spark?stkn=MWZmN3FpYnkxOHJyeQ==' },
+    youtube: { type: String, default: 'https://youtube.com/@sarkarispark-2026?si=TW7tpWlBpqBLLFQM' }
   },
 
   // Subscription Pricing

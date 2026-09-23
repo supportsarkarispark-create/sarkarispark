@@ -72,7 +72,11 @@ export default function AdminSettingsPage() {
       setHeroTitle(settings.heroTitle || { line1: "", line2: "" })
       setHeroDescription(settings.heroDescription || "")
       if (settings.contactInfo) {
-        setContactInfo(settings.contactInfo)
+        setContactInfo({
+          ...settings.contactInfo,
+          instagram: settings.contactInfo.instagram || "https://www.instagram.com/sarkari_spark?stkn=MWZmN3FpYnkxOHJyeQ==",
+          youtube: settings.contactInfo.youtube || "https://youtube.com/@sarkarispark-2026?si=TW7tpWlBpqBLLFQM",
+        })
       }
     }
   }, [settings])

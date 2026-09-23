@@ -10,13 +10,17 @@ export default function Footer() {
   const { data: settingsData } = useQuery(["settings"], () => settingsAPI.getSettings())
   const { data: categoriesData } = useQuery(["footer-categories"], () => examCategoryAPI.getCategories())
   
-  const contactInfo = settingsData?.data?.settings?.contactInfo || {
-    email: "support@sarkarispark.com",
-    phone: "+91 98765 43210",
-    address: "New Delhi, India",
-    facebook: "",
-    instagram: "",
-    youtube: "",
+  const instagramUrl = settingsData?.data?.settings?.contactInfo?.instagram || "https://www.instagram.com/sarkari_spark?stkn=MWZmN3FpYnkxOHJyeQ=="
+  const youtubeUrl = settingsData?.data?.settings?.contactInfo?.youtube || "https://youtube.com/@sarkarispark-2026?si=TW7tpWlBpqBLLFQM"
+  const facebookUrl = settingsData?.data?.settings?.contactInfo?.facebook || ""
+
+  const contactInfo = {
+    email: settingsData?.data?.settings?.contactInfo?.email || "support@sarkarispark.com",
+    phone: settingsData?.data?.settings?.contactInfo?.phone || "+91 98765 43210",
+    address: settingsData?.data?.settings?.contactInfo?.address || "New Delhi, India",
+    facebook: facebookUrl,
+    instagram: instagramUrl,
+    youtube: youtubeUrl,
   }
 
   // Filter categories that should show in footer
@@ -56,9 +60,9 @@ export default function Footer() {
   }
 
   const socialLinks = [
-    { icon: Facebook, href: contactInfo.facebook || "#", label: "Facebook", color: "hover:text-blue-600" },
-    { icon: Instagram, href: contactInfo.instagram || "#", label: "Instagram", color: "hover:text-pink-600" },
-    { icon: Youtube, href: contactInfo.youtube || "#", label: "YouTube", color: "hover:text-red-600" },
+    { icon: Instagram, href: instagramUrl, label: "Instagram", color: "hover:text-pink-600" },
+    { icon: Youtube, href: youtubeUrl, label: "YouTube", color: "hover:text-red-600" },
+    ...(facebookUrl ? [{ icon: Facebook, href: facebookUrl, label: "Facebook", color: "hover:text-blue-600" }] : []),
   ]
 
   return (

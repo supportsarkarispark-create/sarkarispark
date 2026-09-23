@@ -20,6 +20,16 @@ exports.getSettings = async (req, res, next) => {
 
     const settingsObj = settings.toObject();
 
+    // Ensure active social links for Instagram and YouTube
+    if (settingsObj.contactInfo) {
+      if (!settingsObj.contactInfo.instagram) {
+        settingsObj.contactInfo.instagram = 'https://www.instagram.com/sarkari_spark?stkn=MWZmN3FpYnkxOHJyeQ==';
+      }
+      if (!settingsObj.contactInfo.youtube) {
+        settingsObj.contactInfo.youtube = 'https://youtube.com/@sarkarispark-2026?si=TW7tpWlBpqBLLFQM';
+      }
+    }
+
     // Attach real live numbers from the database
     settingsObj.heroStats = {
       activeStudents: userCount,
