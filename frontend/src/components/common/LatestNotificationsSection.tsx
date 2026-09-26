@@ -174,7 +174,7 @@ const fallbackResults: NotificationItem[] = [
 export default function LatestNotificationsSection({
   className = "",
   containerClassName = "",
-  title = "GET THE LATEST NOTIFICATIONS",
+  title = "LATEST SARKARI NOTIFICATIONS & ALERTS",
   subtitle = "(LATEST JOBS • ADMIT CARDS • RESULTS)",
   showTitle = true,
   maxItems = 10,
