@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button"
 import { Card, CardContent } from "@/components/ui/Card"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
+import LatestNotificationsSection from "@/components/common/LatestNotificationsSection"
 import { settingsAPI, sliderAPI, feedbackAPI, govResultsAPI, latestJobsAPI, sarkariAdmitCardAPI, examsAPI } from "@/lib/api"
 import api from "@/lib/api"
 import { useRouter } from "next/navigation"
@@ -693,150 +694,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Latest Updates Bento Grid (Jobs / Admit Cards / Results / Exams) */}
-      <section className="py-12 sm:py-16 bg-gradient-to-b from-slate-100/60 to-white dark:from-slate-900/40 dark:to-slate-950 border-t border-slate-200/80 dark:border-slate-800/80">
-        <div className="container mx-auto px-4">
-
-          <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs uppercase tracking-wider mb-2">
-                <Bell className="h-3.5 w-3.5" /> Real-time Sarkari Updates
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-                Recruitment & Exam Notifications
-              </h2>
-            </div>
-            <Link href="/latest-jobs" className="text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:underline flex items-center gap-1">
-              Browse All Notifications <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            {/* Box 1: Latest Jobs */}
-            <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-purple-100 dark:border-slate-800 p-5 shadow-sm hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-purple-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600">
-                    <BriefcaseIcon className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">Latest Jobs</h3>
-                </div>
-                <Link href="/latest-jobs" className="text-xs font-semibold text-purple-600 hover:underline">View All</Link>
-              </div>
-
-              <div className="space-y-3">
-                {latestJobs.slice(0, 3).map((job: any, idx: number) => (
-                  <Link
-                    key={idx}
-                    href={job.link || "/latest-jobs"}
-                    className="block p-3 rounded-xl hover:bg-purple-50/50 dark:hover:bg-slate-800/60 transition-colors border border-transparent hover:border-purple-200"
-                  >
-                    <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2">
-                      {job.title}
-                    </p>
-                    <span className="inline-block text-[11px] font-semibold text-purple-600 dark:text-purple-400 mt-1">
-                      {job.lastDate ? `Status: ${job.lastDate}` : "Apply Online →"}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Box 2: Admit Cards */}
-            <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-green-100 dark:border-slate-800 p-5 shadow-sm hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-green-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">Admit Cards</h3>
-                </div>
-                <Link href="/admitcards" className="text-xs font-semibold text-emerald-600 hover:underline">View All</Link>
-              </div>
-
-              <div className="space-y-3">
-                {sarkariAdmitCards.slice(0, 3).map((card: any, idx: number) => (
-                  <Link
-                    key={idx}
-                    href={card.link || "/admitcards"}
-                    className="block p-3 rounded-xl hover:bg-emerald-50/50 dark:hover:bg-slate-800/60 transition-colors border border-transparent hover:border-emerald-200"
-                  >
-                    <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2">
-                      {card.title || card.postName}
-                    </p>
-                    <span className="inline-block text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
-                      {card.date ? `Status: ${card.date}` : "Download Admit Card →"}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Box 3: Exam Results */}
-            <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-orange-100 dark:border-slate-800 p-5 shadow-sm hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-orange-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-950 text-orange-600">
-                    <Award className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">Govt Results</h3>
-                </div>
-                <Link href="/results" className="text-xs font-semibold text-orange-600 hover:underline">View All</Link>
-              </div>
-
-              <div className="space-y-3">
-                {govResults.slice(0, 3).map((res: any, idx: number) => (
-                  <Link
-                    key={idx}
-                    href={res.link || "/results"}
-                    className="block p-3 rounded-xl hover:bg-orange-50/50 dark:hover:bg-slate-800/60 transition-colors border border-transparent hover:border-orange-200"
-                  >
-                    <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2">
-                      {res.title}
-                    </p>
-                    <span className="inline-block text-[11px] font-semibold text-orange-600 dark:text-orange-400 mt-1">
-                      {res.date ? `Status: ${res.date}` : "Check Result →"}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Box 4: Active Mock Tests */}
-            <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-blue-100 dark:border-slate-800 p-5 shadow-sm hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-blue-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600">
-                    <BookOpen className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">Exam Series</h3>
-                </div>
-                <Link href="/exams" className="text-xs font-semibold text-blue-600 hover:underline">View All</Link>
-              </div>
-
-              <div className="space-y-3">
-                {realExams.slice(0, 3).map((exam: any, idx: number) => (
-                  <Link
-                    key={idx}
-                    href={exam.link || `/exams/${exam.id || ""}`}
-                    className="block p-3 rounded-xl hover:bg-blue-50/50 dark:hover:bg-slate-800/60 transition-colors border border-transparent hover:border-blue-200"
-                  >
-                    <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2">
-                      {exam.title}
-                    </p>
-                    <span className="inline-block text-[11px] font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                      {exam.subtitle || "Start Online Test →"}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      {/* 5. Recruitment & Exam Notifications Board */}
+      <LatestNotificationsSection className="border-t border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/40 dark:to-slate-950" />
 
       {/* 6. Why Choose Sarkari Spark - Feature Bento Grid */}
       <section className="py-14 sm:py-20 bg-white dark:bg-slate-900">

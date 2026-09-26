@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import { useQuery } from "react-query"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
+import LatestNotificationsSection from "@/components/common/LatestNotificationsSection"
 import { sarkariWorksAPI, getImageUrl } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -211,6 +212,9 @@ export default function SarkariKamPage() {
           </div>
         )}
       </div>
+
+      {/* Latest Notifications Board */}
+      <LatestNotificationsSection className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 mt-12" />
 
       <Footer />
     </div>
